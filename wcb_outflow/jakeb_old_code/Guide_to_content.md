@@ -7,10 +7,12 @@ General notes:
 - directories are mostly hard coded within functions... sorry
 - files contain a lot of functions, organisation is poor, below I will list the useful functions and the files that they are in
 
-Figures and tables in paper, where to find relevant bit of code:
+Where to find relevant bit of code:
 
-	[Figure 6](#figure-6)
-	[Table 2](#table-2)
+[Grid of points from contour](#outflow-grid)
+[Figure 5](#figure-5)
+[Figure 6](#figure-6)
+[Table 2](#table-2)
   
 Filename: Everything_script.py
 
@@ -53,17 +55,42 @@ Filename: circ_int_test.py
   - copy of calculate.calc_circulation to facilitate the splitting of circulation into components as an option
   
   Function name: plot_timeseries_levs()
-  ###### Figure 6
+    ###### Figure 6
   - I believe this is the function to produce
   
   Function name: print_percent_change()
-  ###### Table 2
+    ###### Table 2
   - prints in LaTeX table format change in circulation, area, volume and mass of the outflow volume V2 between the inflow time 0 and outflow time tau, 
     as a percentage of the value at outflow time tau
     
   Function name: print_mass_change()
   - Prints in LaTeX table format the change in the mass of the ridge and the change in the mass of the outflow volume between inflow and outflow times
   
+Filename: WCB_inflow_functions.py
   
+  Contains functions used to define inflow volume as
+  - sum of shadows of outflow volumes (shadow)
+  - area bounded by 3D trajectories above the bottom of the outflow volume (bound_outflow_3D)
+  - area bounded by 3D trajectories which are below the outflow volume (bound_inflow_3D)
+  at inflow time
+  
+  Figure 5
+  is produced using compare_inflow_bounds()
+  notes: I believe gmod refers to the use of a gaussian filter? your guess may be as good as mine
+  
+Filename: July1.py
+
+  Function name: outflow_grid()
+  Outflow grid
+    Take contour (of outflow volume at outflow time) and define grid of points within
+    This is probably the one which resulted in the incorrect start points for 3d trajectories
+  
+  Function name: inflow_caltra()
+    Wrapper to generate 3D trajectory ensembles from grid of points, backwards in time
+    
+  Function name: heating_hist()
+    I believe this was used to define inflow times as times when between them & 6 hours before there was little heating, 
+    and the majority of the heating occured subsequent to these, 
+    to prevent excessive filamentation of the contours and make integrals easier
   
   
