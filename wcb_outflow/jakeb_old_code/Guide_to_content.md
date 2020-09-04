@@ -63,12 +63,12 @@ Filename: circ_int_test.py
   Function name: calc_circulation()
   - copy of calculate.calc_circulation to facilitate the splitting of circulation into components as an option
   
-  ######Figure 6
+######Figure 6
   
   Function name: plot_timeseries_levs()
   - I believe this is the function to produce figure 6
   
-  ######Table 2
+######Table 2
   
   Function name: print_percent_change()
   - prints in LaTeX table format change in circulation, area, volume and mass of the outflow volume V2 between the inflow time 0 and outflow time tau, 
@@ -91,7 +91,7 @@ Filename: WCB_inflow_functions.py
   - area bounded by 3D trajectories which are below the outflow volume (bound_inflow_3D)
   at inflow time
   
-  ######Figure 5
+######Figure 5
   
   is produced using compare_inflow_bounds()
   notes: I believe gmod refers to the use of a gaussian filter? your guess may be as good as mine
@@ -100,7 +100,7 @@ Filename: July1.py
 
   Function name: outflow_grid()
   
-  ######Outflow grid
+######Outflow grid
   - Take contour (of outflow volume at outflow time) and define grid of points within
     This is probably the one which resulted in the incorrect start points for 3d trajectories
   
@@ -114,18 +114,18 @@ Filename: July1.py
   
 Filename: plots_2019.py
 
-  ######Figure 4
+######Figure 4
   
   Function name: trajectory_2D_3D_displacement_difference()
   - greyscale density plots of displacement at inflow time between 2D and 3D back-trajectories from outflow time
   - problem is in L76
   
-  ######Figure 8
+######Figure 8
   
   Function name: inflow_quantities()
   - probably
   
-  ######Figure 7
+######Figure 7
   
   Function name: plot_timeseries_new()
   - in here the ratios of PV, vorticity, mass, area, density etc. are defined and plotted
