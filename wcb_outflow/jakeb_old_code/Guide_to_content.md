@@ -9,8 +9,8 @@ General notes:
 
 Figures and tables in paper, where to find relevant bit of code:
 
-	[Figure 6](#fig6)
-	[Table 2](#tab2)
+	[Figure 6](#figure-6)
+	[Table 2](#table-2)
   
 Filename: Everything_script.py
 
@@ -53,10 +53,11 @@ Filename: circ_int_test.py
   - copy of calculate.calc_circulation to facilitate the splitting of circulation into components as an option
   
   Function name: plot_timeseries_levs()
-  - I believe this is the function to produce <a name="fig6"></a>figure 6
+  ###### Figure 6
+  - I believe this is the function to produce
   
   Function name: print_percent_change()
-  - <a name="tab2"></a>Table 2
+  ###### Table 2
   - prints in LaTeX table format change in circulation, area, volume and mass of the outflow volume V2 between the inflow time 0 and outflow time tau, 
     as a percentage of the value at outflow time tau
     
