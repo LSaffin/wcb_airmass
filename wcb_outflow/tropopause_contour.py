@@ -133,6 +133,22 @@ def join_contours(long_contour, short_contour, threshold=100):
     return long_contour, True
 
 
+def contour_length(points):
+    """Contour length in kilometres
+
+    Args:
+        points: Nx2 array of longitude and latitude points around a contour (degrees)
+
+    Returns:
+        float: The total length of the contour in kilometres
+    """
+    conlen = 0
+    for n in range(len(points) - 1):
+        conlen += haversine(points[n], points[n+1])
+
+    return conlen
+
+
 def haversine(x1, x2):
     """ Calculate the great circle distance between two points on the earth
     (specified in decimal degrees)
