@@ -133,6 +133,37 @@ def join_contours(long_contour, short_contour, threshold=100):
     return long_contour, True
 
 
+def increase_circuit_resolution(points, resolution):
+    """Add points around the circuit loop
+    """
+    # Loop over all points around the circuit.
+    n = 0
+    while n < len(points):
+        # Allow the loop to connect the final point with the first point
+        # i.e np1 = 0
+        np1 = (n+1) % len(points)
+
+        # Calculate distances from current point to next point and
+        # Insert a point if the next point is further away than the required
+        # resolution
+        distance = haversine(points[n], points[np1])
+        if distance > resolution:
+            # Put the next point along the same line
+            dlon = points[np1, 0] - points[n, 0]
+            dlat = points[np1, 1] - points[n, 1]
+
+            new_lon = points[n, 0] + (resolution / distance) * dlon
+            new_lat = points[n, 1] + (resolution / distance) * dlat
+
+            points = np.insert(points, np1, [new_lon, new_lat], axis=0)
+
+        # Always jump to the next point. This will either be the inserted point
+        # or the next point along that is within the required resolution
+        n += 1
+
+    return points
+
+
 def contour_length(points):
     """Contour length in kilometres
 
