@@ -43,7 +43,7 @@ def find_longest_contour(contours):
         len_max (int): The length of the longest contour
     """
     # Get a list of the lengths of each contour
-    lengths = np.array([np.shape(x)[0] for x in contours])
+    lengths = np.array([contour_length(x) for x in contours])
 
     # Index of longest contour
     imax = lengths.argmax()
