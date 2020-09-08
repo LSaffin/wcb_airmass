@@ -10,16 +10,17 @@ import iris.plot as iplt
 from iris.analysis import cartography
 
 
-def get_points(dtheta, pv):
+def get_points(dtheta, pv, resolution):
     # Extract the contour surrounding the outflow region
     criteria = np.logical_and(pv.data < 2, dtheta.data > 0)
     criteria = pv.copy(data=criteria.astype(int))
     cs = iplt.contour(criteria, [0.5], colors="g")
     contours = cs.allsegs[0]
     closed_loop = get_longest_closed_contour(contours)
-    path = mpl.path.Path(closed_loop)
+    increase_circuit_resolution(closed_loop, resolution)
 
     # Create an array containing all the grid points within the outflow region
+    path = mpl.path.Path(closed_loop)
     lon, lat = cartography.get_xy_grids(dtheta)
     points = np.transpose(np.array([lon.flatten(), lat.flatten()]))
     points = points[np.where(path.contains_points(points))]
