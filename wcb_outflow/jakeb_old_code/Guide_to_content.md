@@ -23,11 +23,11 @@ Where to find relevant bit of code:
 
 [Tabular 2](#table-2)
   
-Filename: Everything_script.py
+#### Filename: Everything_script.py
 
   Does what it says on the tin, this is a rundown of everything I did to produce the data and figures for the dissertation
 
-Filename: outflow_area_2019.py
+#### Filename: outflow_area_2019.py
 
   Function name: outflow_th()
   - this is the function used to define the bounding contour for the outflow volumes on isentropic levels
@@ -48,11 +48,11 @@ Filename: outflow_area_2019.py
   Function name: try_caltra_rev()
   - as above but for trajectories forwards in time
 
-Filename: circ_split.py
+#### Filename: circ_split.py
   
   Contains extensions of circulation.circuit_integrals and circulation.mass_integrals to return separate components as for the figure which we may not include
   
-Filename: circ_int_test.py
+#### Filename: circ_int_test.py
 
   Further extensions of functions in circulation.py to use on trajectory ensembles, produce plots, and print percentage changes in a format easily pasteable into a LaTeX table
   (stop reading at "#slightly out of place tack-ons", they were very out of place and have been copied into new file WCB_inflow_functions.py)
@@ -77,13 +77,13 @@ Filename: circ_int_test.py
   Function name: print_mass_change()
   - Prints in LaTeX table format the change in the mass of the ridge and the change in the mass of the outflow volume between inflow and outflow times
   
-Filename: produce_figs.py
+#### Filename: produce_figs.py
   this file contains many plotting functions
   and for some reason the function I used to define ridge area?
   
   Function name: out_ridge_mass()
   
-Filename: WCB_inflow_functions.py
+#### Filename: WCB_inflow_functions.py
   
   Contains functions used to define inflow volume as
   - sum of shadows of outflow volumes (shadow)
@@ -96,7 +96,7 @@ Filename: WCB_inflow_functions.py
   is produced using compare_inflow_bounds()
   notes: I believe gmod refers to the use of a gaussian filter? your guess may be as good as mine
   
-Filename: July1.py
+#### Filename: July1.py
 
   Function name: outflow_grid()
   
@@ -112,7 +112,7 @@ Filename: July1.py
     and the majority of the heating occured subsequent to these, 
     to prevent excessive filamentation of the contours and make integrals easier
   
-Filename: plots_2019.py
+#### Filename: plots_2019.py
 
 ###### Figure 4
   
