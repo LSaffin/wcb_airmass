@@ -43,6 +43,21 @@ class CaseStudy:
 
         return mapping
 
+    def filename_winds(self, time):
+        return str(self.data_path / time.strftime("%Y%m%d_%H")) + "_winds.nc"
+
+    def time_to_filename_winds_mapping(self):
+        mapping = dict()
+
+        time = self.start_time
+        outflow_time = self.start_time + self.outflow_lead_time
+        while time <= outflow_time:
+            mapping[time] = self.filename_winds(time)
+
+            time += self.timestep
+
+        return mapping
+
 
 case_studies = dict(
     IOP3=CaseStudy(

@@ -13,11 +13,12 @@ def preprocess_winds(case):
     """
     # Don't load pressure on model theta levels
     pressure_cs = iris.Constraint(
-        cube_func=lambda x: str(x.attributes["STASH"] != "m01s00i407"))
+        cube_func=lambda x: str(x.attributes["STASH"]) != "m01s00i407")
 
     mapping = case_studies[case].time_to_filename_mapping()
 
     for time in mapping:
+        print(time)
         cubes = iris.load(mapping[time], iris.Constraint(time=time) & pressure_cs)
 
         w = convert.calc("upward_air_velocity", cubes)
@@ -29,13 +30,12 @@ def preprocess_winds(case):
             cube = interpolate.remap_3d(cube, w)
             newcubes.append(cube)
 
-        filename = time.strftime("%Y%m%d_%H") + "_winds.nc"
-        iris.save(cubes, str(case_studies[case].data_path / filename))
+        iris.save(newcubes, case_studies[case].filename_winds(time))
 
 
 def isentropic_trajectories(case, theta_levels):
     # Set up the mapping of times to files:
-    mapping = case_studies[case].time_to_filename_mapping()
+    mapping = case_studies[case].time_to_filename_winds_mapping()
 
     # Get the outflow points for the selected theta levels
     trainp = np.load(str(case_studies[case].data_path / "outflow_boundaries.npy"))
@@ -54,7 +54,7 @@ def isentropic_trajectories(case, theta_levels):
 
 def lagrangian_trajectories(case, theta_levels):
     # Set up the mapping of times to files:
-    mapping = case_studies[case].time_to_filename_mapping()
+    mapping = case_studies[case].time_to_filename_winds_mapping()
 
     # Get the outflow points for the selected theta levels
     trainp = np.load(str(case_studies[case].data_path / "outflow_volume.npy"))
