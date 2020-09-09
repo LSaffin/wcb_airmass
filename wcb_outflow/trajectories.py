@@ -1,28 +1,41 @@
-import datetime
-from pylagranto import caltra, geometry
-from myscripts import case_studies
+import numpy as np
 
-# Set up the mapping of times to files:
-datadir = '/home/lsaffin/Documents/meteorology/data/iop5/'
-start_time = datetime.datetime(2011, 11, 28, 12)
-mapping = {start_time: datadir + '20111128_analysis12.nc'}
-for n in range(6, 25, 6):
-    time = start_time + datetime.timedelta(hours=n)
-    mapping[time] = datadir + 'prognostics_' + str(n).zfill(3) + '.nc'
+from pylagranto import caltra
 
-# Define the start points
-forecast = case_studies.iop5b.copy()
-cubes = forecast.set_lead_time(hours=24)
-levels = ('air_potential_temperature', [315])
-trainp = geometry.select(cubes, 'total_minus_advection_only_theta', '>', 10,
-                         levels=levels)
-#trainp = geometry.select_inflow_region(datadir + 'backward_trajectories.pkl')
-#trainp = geometry.circle((366, 6.5), 6, [320], 0.5)
+from . import case_studies, data_path
 
-# Calculate the trajectories
-traout = caltra.caltra(trainp, mapping, fbflag=-1,
-                       tracers=['air_potential_temperature', 'air_pressure'])
 
-# Save the trajectories
-traout.to_pickle(
-    datadir + 'backward_trajectories_from_heated_region_315K.pkl')
+def isentropic_trajectories(case, theta_levels):
+    # Set up the mapping of times to files:
+    mapping = case_studies[case].time_to_filename_mapping()
+
+    # Get the outflow points for the selected theta levels
+    trainp = np.load(str(case_studies[case].data_path / "outflow_boundaries.npy"))
+    trainp = np.vstack(
+        trainp[np.where(trainp[:, 2] == theta)] for theta in theta_levels
+    )
+
+    levels = ("air_potential_temperature", theta_levels)
+
+    # Calculate the trajectories
+    traout = caltra.caltra(trainp, mapping, nsubs=12, fbflag=-1, levels=levels)
+
+    # Save the trajectories
+    traout.to_pickle(str(data_path / case / "isentropic_trajectories.pkl"))
+
+
+def lagrangian_trajectories(case, theta_levels):
+    # Set up the mapping of times to files:
+    mapping = case_studies[case].time_to_filename_mapping()
+
+    # Get the outflow points for the selected theta levels
+    trainp = np.load(str(case_studies[case].data_path / "outflow_volume.npy"))
+    trainp = np.vstack(
+        trainp[np.where(trainp[:, 2] == theta)] for theta in theta_levels
+    )
+
+    # Calculate the trajectories
+    traout = caltra.caltra(trainp, mapping, nsubs=12, fbflag=-1)
+
+    # Save the trajectories
+    traout.to_pickle(str(data_path / case / "3d_trajectories.pkl"))
