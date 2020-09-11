@@ -23,11 +23,11 @@ Where to find relevant bit of code:
 
 [Tabular 2](#table-2)
   
-Filename: Everything_script.py
+#### Filename: Everything_script.py
 
   Does what it says on the tin, this is a rundown of everything I did to produce the data and figures for the dissertation
 
-Filename: outflow_area_2019.py
+#### Filename: outflow_area_2019.py
 
   Function name: outflow_th()
   - this is the function used to define the bounding contour for the outflow volumes on isentropic levels
@@ -48,11 +48,11 @@ Filename: outflow_area_2019.py
   Function name: try_caltra_rev()
   - as above but for trajectories forwards in time
 
-Filename: circ_split.py
+#### Filename: circ_split.py
   
   Contains extensions of circulation.circuit_integrals and circulation.mass_integrals to return separate components as for the figure which we may not include
   
-Filename: circ_int_test.py
+#### Filename: circ_int_test.py
 
   Further extensions of functions in circulation.py to use on trajectory ensembles, produce plots, and print percentage changes in a format easily pasteable into a LaTeX table
   (stop reading at "#slightly out of place tack-ons", they were very out of place and have been copied into new file WCB_inflow_functions.py)
@@ -63,12 +63,12 @@ Filename: circ_int_test.py
   Function name: calc_circulation()
   - copy of calculate.calc_circulation to facilitate the splitting of circulation into components as an option
   
-######Figure 6
+###### Figure 6
   
   Function name: plot_timeseries_levs()
   - I believe this is the function to produce figure 6
   
-######Table 2
+###### Table 2
   
   Function name: print_percent_change()
   - prints in LaTeX table format change in circulation, area, volume and mass of the outflow volume V2 between the inflow time 0 and outflow time tau, 
@@ -77,13 +77,13 @@ Filename: circ_int_test.py
   Function name: print_mass_change()
   - Prints in LaTeX table format the change in the mass of the ridge and the change in the mass of the outflow volume between inflow and outflow times
   
-Filename: produce_figs.py
+#### Filename: produce_figs.py
   this file contains many plotting functions
   and for some reason the function I used to define ridge area?
   
   Function name: out_ridge_mass()
   
-Filename: WCB_inflow_functions.py
+#### Filename: WCB_inflow_functions.py
   
   Contains functions used to define inflow volume as
   - sum of shadows of outflow volumes (shadow)
@@ -91,16 +91,16 @@ Filename: WCB_inflow_functions.py
   - area bounded by 3D trajectories which are below the outflow volume (bound_inflow_3D)
   at inflow time
   
-######Figure 5
+###### Figure 5
   
   is produced using compare_inflow_bounds()
   notes: I believe gmod refers to the use of a gaussian filter? your guess may be as good as mine
   
-Filename: July1.py
+#### Filename: July1.py
 
   Function name: outflow_grid()
   
-######Outflow grid
+###### Outflow grid
   - Take contour (of outflow volume at outflow time) and define grid of points within
     This is probably the one which resulted in the incorrect start points for 3d trajectories
   
@@ -112,20 +112,20 @@ Filename: July1.py
     and the majority of the heating occured subsequent to these, 
     to prevent excessive filamentation of the contours and make integrals easier
   
-Filename: plots_2019.py
+#### Filename: plots_2019.py
 
-######Figure 4
+###### Figure 4
   
   Function name: trajectory_2D_3D_displacement_difference()
   - greyscale density plots of displacement at inflow time between 2D and 3D back-trajectories from outflow time
   - problem is in L76
   
-######Figure 8
+###### Figure 8
   
   Function name: inflow_quantities()
   - probably
   
-######Figure 7
+###### Figure 7
   
   Function name: plot_timeseries_new()
   - in here the ratios of PV, vorticity, mass, area, density etc. are defined and plotted
