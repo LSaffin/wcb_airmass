@@ -9,6 +9,7 @@ data_path = pathlib.Path(__file__).parent / "data"
 class CaseStudy:
 
     timestep = datetime.timedelta(hours=6)
+    forecast_end_time = datetime.timedelta(hours=120)
 
     def __init__(self, name, start_time, outflow_lead_time, outflow_theta):
         self.name = name
@@ -38,8 +39,8 @@ class CaseStudy:
         filename_t0 = self.filename(self.start_time)
 
         time = self.start_time
-        outflow_time = self.start_time + self.outflow_lead_time
-        while time <= outflow_time:
+        end_time = self.start_time + self.forecast_end_time
+        while time <= end_time:
             mapping[time] = [filename_t0, self.filename(time)]
 
             time += self.timestep
