@@ -46,7 +46,14 @@ def isentropic_trajectories(case, theta_levels):
     levels = ("air_potential_temperature", theta_levels)
 
     # Calculate the trajectories
-    traout = caltra.caltra(trainp, mapping, nsubs=12, fbflag=-1, levels=levels)
+    traout = caltra.caltra(
+        trainp,
+        mapping,
+        nsubs=12,
+        fbflag=-1,
+        levels=levels,
+        tracers=["x_wind", "y_wind", "upward_air_velocity", "altitude"]
+    )
 
     # Save the trajectories
     traout.save(str(data_path / case / "isentropic_trajectories.pkl"))
@@ -60,7 +67,13 @@ def lagrangian_trajectories(case):
     trainp = np.load(str(case_studies[case].data_path / "outflow_volume.npy"))
 
     # Calculate the trajectories
-    traout = caltra.caltra(trainp, mapping, nsubs=12, fbflag=-1, tracers=["air_potential_temperature"])
+    traout = caltra.caltra(
+        trainp,
+        mapping,
+        nsubs=12,
+        fbflag=-1,
+        tracers=["air_potential_temperature"]
+    )
 
     # Save the trajectories
     traout.save(str(data_path / case / "3d_trajectories.pkl"))
