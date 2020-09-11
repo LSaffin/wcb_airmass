@@ -1,6 +1,8 @@
 import pathlib
 import datetime
 
+from pylagranto import trajectory
+
 data_path = pathlib.Path(__file__).parent / "data"
 
 
@@ -8,10 +10,11 @@ class CaseStudy:
 
     timestep = datetime.timedelta(hours=6)
 
-    def __init__(self, name, start_time, outflow_lead_time):
+    def __init__(self, name, start_time, outflow_lead_time, outflow_theta):
         self.name = name
         self.start_time = start_time
         self.outflow_lead_time = outflow_lead_time
+        self.outflow_theta = outflow_theta
 
     @property
     def data_path(self):
@@ -58,26 +61,38 @@ class CaseStudy:
 
         return mapping
 
+    def load_trajectories(self, trajectory_type):
+        if trajectory_type == "isentropic":
+            return trajectory.load(self.data_path / "isentropic_trajectories.pkl")
+        elif trajectory_type == "lagrangian":
+            return trajectory.load(self.data_path / "3d_trajectories.pkl")
+        else:
+            raise KeyError("No trajectory type {} available".format(trajectory_type))
+
 
 case_studies = dict(
     IOP3=CaseStudy(
         name="IOP3",
         start_time=datetime.datetime(2016, 9, 22, 12),
         outflow_lead_time=datetime.timedelta(hours=42),
+        outflow_theta=[320, 325, 330],
     ),
     IOP5=CaseStudy(
         name="IOP5",
         start_time=datetime.datetime(2016, 9, 26, 12),
         outflow_lead_time=datetime.timedelta(hours=36),
+        outflow_theta=[325, 330, 335],
     ),
     IOP6=CaseStudy(
         name="IOP6",
         start_time=datetime.datetime(2016, 9, 30, 12),
         outflow_lead_time=datetime.timedelta(hours=42),
+        outflow_theta=[310, 315, 320],
     ),
     IOP7=CaseStudy(
         name="IOP7",
         start_time=datetime.datetime(2016, 10, 3, 12),
         outflow_lead_time=datetime.timedelta(hours=24),
+        outflow_theta=[310, 315, 320],
     ),
 )
