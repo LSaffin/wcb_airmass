@@ -5,7 +5,7 @@ import iris
 from irise import convert, interpolate
 from pylagranto import caltra
 
-from . import case_studies, data_path
+from . import data_path
 
 
 def preprocess_winds(case):
@@ -15,7 +15,7 @@ def preprocess_winds(case):
     pressure_cs = iris.Constraint(
         cube_func=lambda x: str(x.attributes["STASH"]) != "m01s00i407")
 
-    mapping = case_studies[case].time_to_filename_mapping()
+    mapping = case.time_to_filename_mapping()
 
     for time in mapping:
         print(time)
@@ -30,25 +30,22 @@ def preprocess_winds(case):
             cube = interpolate.remap_3d(cube, w)
             newcubes.append(cube)
 
-        iris.save(newcubes, case_studies[case].filename_winds(time))
+        iris.save(newcubes, case.filename_winds(time))
 
 
-def isentropic_trajectories(case, theta_levels):
-    # Set up the mapping of times to files:
-    mapping = case_studies[case].time_to_filename_winds_mapping()
-
+def isentropic_trajectories(case):
     # Get the outflow points for the selected theta levels
-    trainp = np.load(str(case_studies[case].data_path / "outflow_boundaries.npy"))
+    trainp = np.load(str(case.data_path / "outflow_boundaries.npy"))
     trainp = np.vstack(
-        trainp[np.where(trainp[:, 2] == theta)] for theta in theta_levels
+        trainp[np.where(trainp[:, 2] == theta)] for theta in case.theta_levels
     )
 
-    levels = ("air_potential_temperature", theta_levels)
+    levels = ("air_potential_temperature", case.theta_levels)
 
     # Calculate the trajectories
     traout = caltra.caltra(
         trainp,
-        mapping,
+        case.time_to_filename_winds_mapping(),
         nsubs=12,
         fbflag=-1,
         levels=levels,
@@ -60,16 +57,13 @@ def isentropic_trajectories(case, theta_levels):
 
 
 def lagrangian_trajectories(case):
-    # Set up the mapping of times to files:
-    mapping = case_studies[case].time_to_filename_winds_mapping()
-
     # Get the outflow points for the selected theta levels
-    trainp = np.load(str(case_studies[case].data_path / "outflow_volume.npy"))
+    trainp = np.load(str(case.data_path / "outflow_volume.npy"))
 
     # Calculate the trajectories
     traout = caltra.caltra(
         trainp,
-        mapping,
+        case.time_to_filename_winds_mapping(),
         nsubs=12,
         fbflag=-1,
         tracers=["air_potential_temperature"]
