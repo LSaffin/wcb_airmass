@@ -33,7 +33,7 @@ def preprocess_winds(case):
         iris.save(newcubes, case.filename_winds(time))
 
 
-def isentropic_trajectories(case):
+def isentropic_trajectories(case, fbflag=-1):
     # Get the outflow points for the selected theta levels
     trainp = np.load(str(case.data_path / "outflow_boundaries.npy"))
     trainp = np.vstack(
@@ -42,12 +42,19 @@ def isentropic_trajectories(case):
 
     levels = ("air_potential_temperature", case.theta_levels)
 
+    if fbflag == 1:
+        mapping = case.time_to_filename_winds_mapping(
+            start=case.outflow_time, end=case.forecast_end_time
+        )
+    elif fbflag == -1:
+        mapping = case.time_to_filename_winds_mapping()
+
     # Calculate the trajectories
     traout = caltra.caltra(
         trainp,
-        case.time_to_filename_winds_mapping(),
+        mapping,
         nsubs=12,
-        fbflag=-1,
+        fbflag=fbflag,
         levels=levels,
         tracers=["x_wind", "y_wind", "upward_air_velocity", "altitude"]
     )

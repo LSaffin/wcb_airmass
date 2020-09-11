@@ -9,7 +9,7 @@ data_path = pathlib.Path(__file__).parent / "data"
 class CaseStudy:
 
     timestep = datetime.timedelta(hours=6)
-    forecast_end_time = datetime.timedelta(hours=120)
+    forecast_end_lead_time = datetime.timedelta(hours=120)
 
     def __init__(self, name, start_time, outflow_lead_time, outflow_theta):
         self.name = name
@@ -25,6 +25,14 @@ class CaseStudy:
     def datestr(self):
         return self.start_time.strftime("%Y%m%d_%H")
 
+    @property
+    def outflow_time(self):
+        return self.start_time + self.outflow_lead_time
+
+    @property
+    def forecast_end_time(self):
+        return self.start_time + self.forecast_end_lead_time
+
     def filename(self, time):
         # Files output every 12 hours
         lead_time = time - self.start_time
@@ -39,8 +47,7 @@ class CaseStudy:
         filename_t0 = self.filename(self.start_time)
 
         time = self.start_time
-        end_time = self.start_time + self.forecast_end_time
-        while time <= end_time:
+        while time <= self.forecast_end_time:
             mapping[time] = [filename_t0, self.filename(time)]
 
             time += self.timestep
@@ -50,12 +57,16 @@ class CaseStudy:
     def filename_winds(self, time):
         return str(self.data_path / time.strftime("%Y%m%d_%H")) + "_winds.nc"
 
-    def time_to_filename_winds_mapping(self):
+    def time_to_filename_winds_mapping(self, start=None, end=None):
+        if start is None:
+            start = self.start_time
+        if end is None:
+            end = self.outflow_time
+
         mapping = dict()
 
-        time = self.start_time
-        outflow_time = self.start_time + self.outflow_lead_time
-        while time <= outflow_time:
+        time = start
+        while time <= end:
             mapping[time] = self.filename_winds(time)
 
             time += self.timestep
