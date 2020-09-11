@@ -5,8 +5,6 @@ import iris
 from irise import convert, interpolate
 from pylagranto import caltra
 
-from . import data_path
-
 
 def preprocess_winds(case):
     """Interpolate wind fields to a common grid ready for trajectory calculations
@@ -37,16 +35,18 @@ def isentropic_trajectories(case, fbflag=-1):
     # Get the outflow points for the selected theta levels
     trainp = np.load(str(case.data_path / "outflow_boundaries.npy"))
     trainp = np.vstack(
-        trainp[np.where(trainp[:, 2] == theta)] for theta in case.theta_levels
+        trainp[np.where(trainp[:, 2] == theta)] for theta in case.outflow_theta
     )
 
-    levels = ("air_potential_temperature", case.theta_levels)
+    levels = ("air_potential_temperature", case.outflow_theta)
 
     if fbflag == 1:
+        fname = "forward"
         mapping = case.time_to_filename_winds_mapping(
             start=case.outflow_time, end=case.forecast_end_time
         )
     elif fbflag == -1:
+        fname = "backward"
         mapping = case.time_to_filename_winds_mapping()
 
     # Calculate the trajectories
@@ -60,7 +60,7 @@ def isentropic_trajectories(case, fbflag=-1):
     )
 
     # Save the trajectories
-    traout.save(str(data_path / case / "isentropic_trajectories.pkl"))
+    traout.save(str(case.data_path / "isentropic_trajectories_{}.pkl".format(fname)))
 
 
 def lagrangian_trajectories(case):
@@ -77,4 +77,4 @@ def lagrangian_trajectories(case):
     )
 
     # Save the trajectories
-    traout.save(str(data_path / case / "3d_trajectories.pkl"))
+    traout.save(str(case.data_path / "3d_trajectories.pkl"))
