@@ -1,8 +1,5 @@
 """Identification of the outflow of warm conveyor belts
 """
-
-from math import radians, cos, sin, asin, sqrt
-
 import numpy as np
 import matplotlib as mpl
 
@@ -126,13 +123,13 @@ def haversine(x1, x2):
     (specified in decimal degrees)
     """
     # convert decimal degrees to radians
-    lon1, lat1, lon2, lat2 = map(radians, [x1[0], x1[1], x2[0], x2[1]])
+    lon1, lat1, lon2, lat2 = map(np.deg2rad, [x1[0], x1[1], x2[0], x2[1]])
 
     # haversine formula
     dlon = lon2 - lon1
     dlat = lat2 - lat1
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    c = 2 * asin(sqrt(a))
+    a = np.sin(dlat / 2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2)**2
+    c = 2 * np.arcsin(np.sqrt(a))
     r = 6371  # Radius of earth in kilometers
     return c * r
 
