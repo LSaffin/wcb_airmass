@@ -73,13 +73,27 @@ class CaseStudy:
 
         return mapping
 
-    def load_trajectories(self, trajectory_type):
-        if trajectory_type == "isentropic":
-            return trajectory.load(self.data_path / "isentropic_trajectories.pkl")
-        elif trajectory_type == "lagrangian":
-            return trajectory.load(self.data_path / "3d_trajectories.pkl")
-        else:
-            raise KeyError("No trajectory type {} available".format(trajectory_type))
+    def filename_theta(self, time):
+        # Tracer files ("b" and "c") output every 6 hours
+        lead_time = time - self.start_time
+        lead_time_str = int(lead_time.total_seconds()) // 3600
+
+        filenames = [
+            "{}/prodm_op_gl-mn_{}_{}{:03d}_thsfcs_5K.nc".format(
+                self.name, self.datestr, letter, lead_time_str)
+            for letter in ["b", "c"]
+        ]
+
+        # Meteorological files ("d") output every 12 hours
+        lead_time = lead_time - (lead_time % datetime.timedelta(hours=12))
+        lead_time_str = int(lead_time.total_seconds()) // 3600
+
+        filenames.append(
+            "{}/prodm_op_gl-mn_{}_d{:03d}_thsfcs_5K.nc".format(
+                self.name, self.datestr, lead_time_str)
+        )
+
+        return filenames
 
 
 case_studies = dict(
