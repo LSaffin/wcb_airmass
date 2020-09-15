@@ -1,10 +1,102 @@
 """Identification of the outflow of warm conveyor belts
 """
 import numpy as np
+from scipy.ndimage import filters
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 
+import iris
 import iris.plot as iplt
 from iris.analysis import cartography
+
+
+def outflow_th(case, theta_levels, filtersize=30, resolution=5):
+    """Returns numpy array of indices on contour around WCB outflow
+
+    Args:
+        case (wcb_outflow.CaseStudy):
+        theta_levels (list):
+    """
+    cubes = iris.load(
+        case.filename_theta(case.outflow_time),
+        iris.Constraint(time=case.outflow_time)
+    )
+
+    dtheta = cubes.extract_strict("total_minus_adv_only_theta")
+    z = cubes.extract("altitude")[0]
+    pv = cubes.extract_strict("ertel_potential_vorticity")
+
+    plt.figure(figsize=(10, 14))
+    V = np.linspace(-10, 40, 11)
+    norm = mpl.colors.Normalize(-40, 40)
+
+    outflow_volume = np.array([])
+
+    if case.name == "IOP7":  # outflow into IOP7, bit of a weird one
+        cutoff = 0
+        endoff = -150
+
+        # Smaller filter size for PV to maintain fine structure dividing the ridges
+        filtersize_t, filtersize_p = filtersize, 5
+    else:
+        cutoff = 150
+        endoff = -1
+
+        filtersize_t, filtersize_p = filtersize, filtersize
+
+    for i, theta_level in enumerate(theta_levels):
+        # restrict to outflow time and selected theta level
+        # the cutoff artificially truncates the domain s.t. only the region we want is
+        # found (removes West: can't see new developing storms)
+        level_cs = iris.Constraint(air_potential_temperature=theta_level)
+        dtheta_subset = dtheta.extract(level_cs)[:, cutoff:endoff].copy()
+        z_subset = z.extract(level_cs)[:, cutoff:endoff].copy()
+        pv_subset = pv.extract(level_cs)[:, cutoff:endoff].copy()
+
+        # apply median filter to smooth fields
+        dtheta_subset.data = filters.median_filter(dtheta_subset.data, size=filtersize_t)
+        pv_subset.data = filters.median_filter(pv_subset.data, size=filtersize_p)
+
+        # Plot the smoothed fields
+        plt.subplot(len(theta_levels), 2, 2 * i + 1)
+        iplt.contourf(dtheta_subset, V, cmap="seismic", norm=norm)
+        iplt.contour(pv_subset, [2], colors=["k"])
+        plt.gca().set_title("{}K".format(theta_level))
+        plt.gca().coastlines()
+
+        # Contour the outflow region (dtheta=0 & PV<2) and extract the outflow boundary
+        # and interior points
+        boundary, points = get_points(dtheta_subset, pv_subset, z_subset, resolution)
+
+        # Plot the original (unsmoothed) dtheta field with the identified outflow region
+        # overlayed
+        plt.subplot(len(theta_levels), 2, 2 * i + 2)
+        iplt.contourf(dtheta.extract(level_cs), V, cmap="seismic", norm=norm)
+        plt.gca().coastlines()
+        plt.plot(boundary[:, 0] - 360, boundary[:, 1], "-g.")
+        plt.scatter(points[:, 0] - 360, points[:, 1], c=points[:, 2])
+
+        boundary3d = np.zeros([boundary.shape[0], 3])
+        boundary3d[:, 0:2] = boundary
+        boundary3d[:, 2] = theta_level
+
+        points3d = np.zeros([points.shape[0], 4])
+        points3d[:, 0:3] = points
+        points3d[:, 3] = theta_level
+
+        if i == 0:
+            outflow_boundaries = boundary3d
+            outflow_volume = points3d
+        else:
+            outflow_boundaries = np.concatenate((outflow_boundaries, boundary3d))
+            outflow_volume = np.concatenate((outflow_volume, points3d))
+
+    np.save(str(case.data_path / "outflow_boundaries.npy"), outflow_boundaries)
+    np.save(str(case.data_path / "outflow_volume.npy"), outflow_volume)
+
+    plt.show()
+
+    return
 
 
 def get_points(dtheta, pv, z, resolution):
