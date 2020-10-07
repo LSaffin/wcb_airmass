@@ -2,6 +2,8 @@
 Rerunning through everything in Jake's everything_script
 """
 
+import warnings
+
 import numpy as np
 
 from . import case_studies, outflow, trajectories, circulation
@@ -32,10 +34,11 @@ def main():
         trajectories.isentropic_trajectories_from_volume(case_studies[case_name])
 
     # Circulation
-    # circulation.calc_circulation(case_studies["IOP3"])
-    # circulation.calc_circulation(case_studies["IOP5"])
-    # circulation.calc_circulation(case_studies["IOP6"])
-    # circulation.calc_circulation(case_studies["IOP7"])
+    warnings.filterwarnings("ignore", category=UserWarning)
+    circulation.calc_circulation(case_studies["IOP3"])
+    circulation.calc_circulation(case_studies["IOP5"])
+    circulation.calc_circulation(case_studies["IOP6"])
+    circulation.calc_circulation(case_studies["IOP7"])
 
 
 if __name__ == "__main__":

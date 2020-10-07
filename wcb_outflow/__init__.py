@@ -81,7 +81,7 @@ class CaseStudy:
         filenames = [
             "{}/prodm_op_gl-mn_{}_{}{:03d}_thsfcs_5K.nc".format(
                 self.name, self.datestr, letter, lead_time_str)
-            for letter in ["b", "c"]
+            for letter in ["c"]
         ]
 
         # Meteorological files ("d") output every 12 hours
