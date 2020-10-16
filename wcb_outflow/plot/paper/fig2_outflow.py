@@ -12,12 +12,13 @@ import cartopy.crs as ccrs
 
 from pylagranto import trajectory
 
-from ... import case_studies
+from wcb_outflow.plot import background_map
+from wcb_outflow import case_studies
 
 
 def main():
     projection = ccrs.Mollweide()
-    fig = plt.figure(figsize=[16, 10])
+    fig = plt.figure(figsize=[8, 5])
 
     for n, case_name in enumerate(case_studies):
         case = case_studies[case_name]
@@ -61,24 +62,13 @@ def main():
 
 def make_plot(ax, dtheta, pv, tr):
     im = iplt.pcolormesh(dtheta, vmin=-30, vmax=30, cmap="seismic")
-    ax.coastlines()
-    ax.gridlines()
-
-    # Add a contour for PV=2 and also shade PV>2
-    iplt.contour(pv, [2], colors='k')
-    pv.data = (pv.data > 2).astype(float)
-    iplt.contourf(pv, [0.9, 1.1], colors="k", alpha=0.25)
 
     # Need to use the cube's coordinate reference system to properly add regular
     # coordinates on top
     crs = dtheta.coord(axis="x").coord_system.as_cartopy_crs()
     plt.plot(tr.x[:, 0] - 360, tr.y[:, 0], transform=crs, lw=3, color='cyan')
 
-    # With the projection the axis limits don't set well, so shrink it down as much as
-    # possible
-    x, y = pv.coord(axis="x"), pv.coord(axis="y")
-    ax.set_extent([x.points.min(), x.points.max(), y.points.min(), y.points.max()],
-                  crs=crs)
+    background_map(ax, pv)
 
     return im
 
