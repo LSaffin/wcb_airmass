@@ -87,7 +87,10 @@ def calc_circulation(case, dtheta=1):
 
             # Calculate enclosed area integrals
             try:
-                cubes = iris.load(case.filename_theta(tr_theta.times[n]), iris.Constraint(time=tr_theta.times[n]))
+                cubes = iris.load(
+                    case.filename_theta(tr_theta.times[n], tracer_files=["c"]),
+                    iris.Constraint(time=tr_theta.times[n])
+                )
                 print("{}K: {}".format(theta_level, tr_theta.times[n]))
             except OSError:
                 print(str(tr_theta.times[n]) + " not available")

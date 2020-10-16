@@ -73,15 +73,16 @@ class CaseStudy:
 
         return mapping
 
-    def filename_theta(self, time):
+    def filename_theta(self, time, tracer_files=["b", "c"]):
         # Tracer files ("b" and "c") output every 6 hours
+        # Optional argument "tracer_files" can choose which ones to load
         lead_time = time - self.start_time
         lead_time_str = int(lead_time.total_seconds()) // 3600
 
         filenames = [
             "{}/prodm_op_gl-mn_{}_{}{:03d}_thsfcs_5K.nc".format(
                 self.name, self.datestr, letter, lead_time_str)
-            for letter in ["c"]
+            for letter in tracer_files
         ]
 
         # Meteorological files ("d") output every 12 hours
