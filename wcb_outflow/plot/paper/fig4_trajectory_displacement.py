@@ -10,20 +10,20 @@ from matplotlib.colors import LogNorm
 
 from pylagranto import trajectory
 
-from ... import case_studies
-from ...outflow import haversine
+from wcb_outflow import case_studies
+from wcb_outflow.outflow import haversine
 
 
 # Adjustable plot parameters
-norm = LogNorm(vmin=1, vmax=350)
+norm = LogNorm(vmin=1, vmax=500)
 bins = 51
-dx_range = [-2500, 2500]
+dx_range = [-3000, 3000]
 dtheta_range = [-40, 10]
 time_index = -1
 
 
 def main():
-    fig, axes = plt.subplots(4, 3, sharex="all", sharey="all", figsize=(16, 10))
+    fig, axes = plt.subplots(4, 1, sharex="all", sharey="all", figsize=(8, 10))
     for m, case_name in enumerate(case_studies):
         case = case_studies[case_name]
         tr = trajectory.load(case.data_path / "isentropic_trajectories_from_volume.pkl")
@@ -44,45 +44,52 @@ def main():
         tr = tr[idx]
         tr3d = tr3d[idx]
 
-        for n, theta_level in enumerate(case.outflow_theta):
-            idx = np.where(tr.data[:, 0, 2] == theta_level)[0]
+        # Select trajectories that start in the outflow
+        idx = np.where(np.logical_and(
+            tr.data[:, 0, 2] <= case.outflow_theta[-1],
+            tr.data[:, 0, 2] >= case.outflow_theta[0],
+        ))[0]
 
-            # Make sure the initial positions match
-            assert (tr[idx].x[:, 0] == tr3d[idx].x[:, 0]).all()
-            assert (tr[idx].y[:, 0] == tr3d[idx].y[:, 0]).all()
+        tr = tr[idx]
+        tr3d = tr3d[idx]
 
-            # Calculate horizonatal and vertical (theta) displacements
-            displacement = haversine([tr[idx].x, tr[idx].y], [tr3d[idx].x, tr3d[idx].y])
-            theta = tr3d["air_potential_temperature"][idx] - theta_level
+        # Make sure the initial positions match
+        assert (tr.x[:, 0] == tr3d.x[:, 0]).all()
+        assert (tr.y[:, 0] == tr3d.y[:, 0]).all()
 
-            # Use the x (longitude) difference to plot the sign of the displacement
-            # (purely for visualisation)
-            dx = tr3d[idx].x - tr[idx].x
+        # Calculate horizonatal and vertical (dtheta) displacements
+        displacement = haversine([tr.x, tr.y], [tr3d.x, tr3d.y])[:, time_index]
+        dtheta = tr3d["air_potential_temperature"][:, time_index] - \
+                 tr3d["air_potential_temperature"][:, 0]
 
-            h, xed, yed, im = axes[m, n].hist2d(
-                displacement[:, time_index]*np.sign(dx)[:, time_index],
-                theta[:, time_index],
-                bins=bins,
-                range=[dx_range, dtheta_range],
-                norm=norm,
-            )
+        # Use the x (longitude) difference to plot the sign of the displacement
+        # (purely for visualisation)
+        dx = tr3d.x[:, time_index] - tr.x[:, time_index]
 
-            axes[m, n].set_title("{}: {}K".format(case.name, theta_level))
+        h, xed, yed, im = axes[m].hist2d(
+            displacement*np.sign(dx),
+            dtheta,
+            bins=bins,
+            range=[dx_range, dtheta_range],
+            norm=norm,
+        )
 
-            # Print out numbers for adjusting plot parameters
-            print(case.name, theta_level)
-            print("Max trajectories: ", h.max())
-            print("Max dx: ", displacement.max())
-            print("Max dtheta: ", theta.max())
+        axes[m].set_title(case.name)
+
+        # Print out numbers for adjusting plot parameters
+        print(case.name)
+        print("Max trajectories: ", h.max())
+        print("Max dx: ", displacement.max())
+        print("Max dtheta: ", dtheta.max())
 
     fig.subplots_adjust(right=0.8)
     cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
     cbar = fig.colorbar(im, cax=cbar_ax)
     cbar.set_label("Number of Trajectories")
 
-    axes[-1, 1].set_xlabel(r"$|\Delta \mathbf{x}|$ (km)")
-    fig.text(0.05, 0.5, r"$\Delta \theta$ (K)", rotation="vertical")
-    plt.savefig("fig4_trajectory_displacement.png")
+    axes[-1].set_xlabel(r"$|\Delta \mathbf{x}|$ (km)")
+    fig.text(0.05, 0.5, r"$\Delta \theta$ (K)", rotation="vertical", va="center")
+    plt.show()
 
 
 if __name__ == '__main__':
