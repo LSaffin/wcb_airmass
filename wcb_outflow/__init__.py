@@ -11,9 +11,10 @@ class CaseStudy:
     timestep = datetime.timedelta(hours=6)
     forecast_end_lead_time = datetime.timedelta(hours=120)
 
-    def __init__(self, name, start_time, outflow_lead_time, outflow_theta):
+    def __init__(self, name, start_time, inflow_lead_time, outflow_lead_time, outflow_theta):
         self.name = name
         self.start_time = start_time
+        self.inflow_lead_time = inflow_lead_time
         self.outflow_lead_time = outflow_lead_time
         self.outflow_theta = outflow_theta
 
@@ -24,6 +25,10 @@ class CaseStudy:
     @property
     def datestr(self):
         return self.start_time.strftime("%Y%m%d_%H")
+
+    @property
+    def inflow_time(self):
+        return self.start_time + self.inflow_lead_time
 
     @property
     def outflow_time(self):
@@ -101,24 +106,28 @@ case_studies = dict(
     IOP3=CaseStudy(
         name="IOP3",
         start_time=datetime.datetime(2016, 9, 22, 12),
+        inflow_lead_time=datetime.timedelta(hours=12),
         outflow_lead_time=datetime.timedelta(hours=42),
         outflow_theta=[320, 325, 330],
     ),
     IOP5=CaseStudy(
         name="IOP5",
         start_time=datetime.datetime(2016, 9, 26, 12),
+        inflow_lead_time=datetime.timedelta(hours=0),
         outflow_lead_time=datetime.timedelta(hours=36),
         outflow_theta=[325, 330, 335],
     ),
     IOP6=CaseStudy(
         name="IOP6",
         start_time=datetime.datetime(2016, 9, 30, 12),
+        inflow_lead_time=datetime.timedelta(hours=12),
         outflow_lead_time=datetime.timedelta(hours=42),
         outflow_theta=[310, 315, 320],
     ),
     IOP7=CaseStudy(
         name="IOP7",
         start_time=datetime.datetime(2016, 10, 3, 12),
+        inflow_lead_time=datetime.timedelta(hours=0),
         outflow_lead_time=datetime.timedelta(hours=24),
         outflow_theta=[310, 315, 320],
     ),
