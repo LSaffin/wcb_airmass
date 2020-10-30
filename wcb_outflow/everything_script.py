@@ -6,7 +6,7 @@ import warnings
 
 import numpy as np
 
-from . import case_studies, outflow, trajectories, circulation
+from wcb_outflow import case_studies, outflow, trajectories, inflow, circulation
 
 
 def main():
@@ -32,6 +32,12 @@ def main():
 
         # Isentropic trajectories from the same points as 3d trajectories
         trajectories.isentropic_trajectories_from_volume(case_studies[case_name])
+
+    # Inflow regions
+    inflow.from_3d_trajectories(case_studies["IOP3"])
+    inflow.from_3d_trajectories(case_studies["IOP5"])
+    inflow.from_3d_trajectories(case_studies["IOP6"])
+    inflow.from_3d_trajectories(case_studies["IOP7"])
 
     # Circulation
     warnings.filterwarnings("ignore", category=UserWarning)
