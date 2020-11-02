@@ -226,7 +226,7 @@ def haversine(x1, x2):
     return c * r
 
 
-def contour_around_points(xpoints, ypoints, example_cube, filter_size=30):
+def contour_around_points(xpoints, ypoints, example_cube, filter_size=30, **kwargs):
     """Create a contour that encloses the given set of points
     """
     x, y = example_cube.coord(axis="x").points, example_cube.coord(axis="y").points
@@ -237,7 +237,7 @@ def contour_around_points(xpoints, ypoints, example_cube, filter_size=30):
     histogram, xed, yed = np.histogram2d(xpoints, ypoints, bins=bins)
     histogram = filters.median_filter(histogram.transpose(), size=filter_size)
     histogram = example_cube.copy(data=histogram)
-    cs = iplt.contour(histogram, [0.5])
+    cs = iplt.contour(histogram, [0.5], **kwargs)
 
     return get_longest_closed_contour(cs.allsegs[0])
 
