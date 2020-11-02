@@ -226,3 +226,26 @@ def haversine(x1, x2):
     return c * r
 
 
+def contour_around_points(xpoints, ypoints, example_cube, filter_size=30):
+    """Create a contour that encloses the given set of points
+    """
+    x, y = example_cube.coord(axis="x").points, example_cube.coord(axis="y").points
+    bins = (_bin_edges(x), _bin_edges(y))
+
+    # Produce a contour around all the points in the inflow
+    # Use the same median filter as for the outflows
+    histogram, xed, yed = np.histogram2d(xpoints, ypoints, bins=bins)
+    histogram = filters.median_filter(histogram.transpose(), size=filter_size)
+    histogram = example_cube.copy(data=histogram)
+    cs = iplt.contour(histogram, [0.5])
+
+    return get_longest_closed_contour(cs.allsegs[0])
+
+
+def _bin_edges(x):
+    xed = np.zeros(len(x) + 1)
+    dx = np.diff(x).mean()
+    xed[:-1] = x - dx
+    xed[-1] = x[-1] + dx
+
+    return xed
