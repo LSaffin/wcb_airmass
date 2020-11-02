@@ -8,16 +8,14 @@ identify it (dtheta + PV)
 import matplotlib.pyplot as plt
 import iris
 import iris.plot as iplt
-import cartopy.crs as ccrs
 
 from pylagranto import trajectory
 
-from wcb_outflow.plot import background_map
+from wcb_outflow.plot import background_map, projection
 from wcb_outflow import case_studies
 
 
 def main():
-    projection = ccrs.Mollweide()
     fig = plt.figure(figsize=[8, 5])
 
     for n, case_name in enumerate(case_studies):

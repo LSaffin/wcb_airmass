@@ -1,4 +1,9 @@
+import cartopy.crs as ccrs
+
 import iris.plot as iplt
+
+
+projection = ccrs.NearsidePerspective(central_longitude=-20, central_latitude=50)
 
 
 def background_map(ax, pv):
@@ -14,4 +19,4 @@ def background_map(ax, pv):
     # possible
     x, y = pv.coord(axis="x"), pv.coord(axis="y")
     crs = x.coord_system.as_cartopy_crs()
-    ax.set_extent([x.points.min(), x.points.max(), y.points.min(), y.points.max()], crs=crs)
+    ax.set_extent([x.points.min(), x.points.max(), y.points.min()-11, y.points.max()], crs=crs)
