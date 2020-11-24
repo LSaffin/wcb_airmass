@@ -3,6 +3,9 @@
 Creates a table that can be pasted in to a LaTeX document
 """
 
+import datetime
+
+import numpy as np
 import iris
 
 from wcb_outflow import case_studies
@@ -23,10 +26,10 @@ def main():
     print(" & ".join(["Case"] + ["Isentropic Level (K)"] + diagnostics))
     for case in case_studies:
         case_study = case_studies[case]
-        cubes = iris.load(
-            str(case_study.data_path / "circulation.nc"),
-            iris.Constraint(time=[case_study.inflow_time, case_study.outflow_time])
-        )
+        cubes = iris.load(str(case_study.data_path / "circulation.nc"))
+
+        dt = case_study.outflow_time - datetime.datetime(1970, 1, 1)
+        idx_outflow = (dt.total_seconds() // 3600 == cubes[2].coord("time").points).argmax()
 
         for theta_level in case_study.outflow_theta:
             # Prepend the case study name and theta level to each line of results
@@ -41,7 +44,7 @@ def main():
                     cube = cubes_theta.extract_strict(name)
 
                 # Percentage change from start to end, relative to initial value
-                diff = ((cube[-1] - cube[0]) / cube[0]) * 100
+                diff = percentage_increase(cube, idx_outflow)
                 try:
                     # Round to 2 decimal places to make the table neater
                     results.append(round(diff.data[()], 2))
@@ -59,6 +62,13 @@ def get_vorticity(cubes):
     mass = cubes.extract_strict("area")
 
     return circulation / mass
+
+
+def percentage_increase(cube, idx_outflow):
+    # Use the earliest non-NaN values
+    idx_inflow = np.isfinite(cube.data).argmax()
+
+    return ((cube[idx_outflow] - cube[idx_inflow]) / cube[idx_inflow]) * 100
 
 
 if __name__ == '__main__':
