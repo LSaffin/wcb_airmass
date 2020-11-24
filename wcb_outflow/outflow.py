@@ -9,6 +9,8 @@ import iris
 import iris.plot as iplt
 from iris.analysis import cartography
 
+from pylagranto import trajectory
+
 
 def outflow_th(case, theta_levels, filtersize=30, resolution=5):
     """Returns numpy array of indices on contour around WCB outflow
@@ -93,6 +95,25 @@ def outflow_th(case, theta_levels, filtersize=30, resolution=5):
 
     np.save(str(case.data_path / "outflow_boundaries.npy"), outflow_boundaries)
     np.save(str(case.data_path / "outflow_volume.npy"), outflow_volume)
+
+    plt.show()
+
+    return
+
+
+def at_inflow_time(case):
+    tr = trajectory.load(case.data_path / "isentropic_trajectories_from_volume.pkl")
+
+    cube = iris.load_cube(
+        case.filename_theta(case.start_time),
+        iris.Constraint(name="ertel_potential_vorticity", time=case.start_time)
+    )
+
+    for theta in case.outflow_theta:
+        tr_theta = tr.select("air_potential_temperature", "==", theta)
+        closed_loop = contour_around_points(tr_theta.x[:, -1], tr_theta.y[:, -1], cube[0])
+
+        np.save(str(case.data_path / "outflow_boundaries_at_inflow_time_{}K.npy".format(theta)), closed_loop)
 
     plt.show()
 

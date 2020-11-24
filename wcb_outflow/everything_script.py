@@ -39,6 +39,11 @@ def main():
     inflow.from_3d_trajectories(case_studies["IOP6"])
     inflow.from_3d_trajectories(case_studies["IOP7"])
 
+    outflow.at_inflow_time(case_studies["IOP3"])
+    #outflow.at_inflow_time(case_studies["IOP5"])
+    outflow.at_inflow_time(case_studies["IOP6"])
+    outflow.at_inflow_time(case_studies["IOP7"])
+
     # Circulation
     warnings.filterwarnings("ignore", category=UserWarning)
     circulation.calc_circulation(case_studies["IOP3"])
