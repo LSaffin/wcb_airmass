@@ -22,9 +22,14 @@ setup(
     description="Circulation in warm-conveyor belts",
     long_description=read("README.rst"),
 
-    packages=find_packages(exclude=('tests',)),
+    packages=find_packages(include=["wcb_outflow"], exclude=('tests',)),
 
     install_requires=[
+        "numpy",
+        "matplotlib",
+        "scipy",
+        "scitools-iris",
+        "cartopy",
         "pylagranto",
     ],
 
