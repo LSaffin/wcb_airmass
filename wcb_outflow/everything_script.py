@@ -11,11 +11,41 @@ from wcb_outflow import case_studies, outflow, trajectories, inflow, circulation
 
 def main():
     # Define initial outflow volumes
-    theta_levels = np.arange(300, 340, 5)
-    outflow.outflow_th(case_studies["IOP3"], theta_levels=theta_levels)
-    outflow.outflow_th(case_studies["IOP5"], theta_levels=theta_levels)
-    outflow.outflow_th(case_studies["IOP6"], theta_levels=theta_levels[1:])
-    outflow.outflow_th(case_studies["IOP7"], theta_levels=theta_levels)
+    theta_levels = np.arange(300, 350, 5)
+    outflow.outflow_th(
+        case_studies["IOP3"],
+        theta_levels,
+        lon_bounds=(335, 400),
+        lat_bounds=(40, 75),
+        filtersize_t=25,
+        filtersize_p=1,
+        save=True,
+    )
+
+    outflow.outflow_th(
+        case_studies["IOP5"],
+        theta_levels,
+        lon_bounds=(300, 375),
+        lat_bounds=(20, 65),
+        filtersize_t=30,
+        filtersize_p=30,
+    )
+    outflow.outflow_th(
+        case_studies["IOP6"],
+        theta_levels[1:],
+        lon_bounds=(310, 365),
+        lat_bounds=(40, 75),
+        filtersize_t=30,
+        filtersize_p=30,
+    )
+    outflow.outflow_th(
+        case_studies["IOP7"],
+        theta_levels,
+        lon_bounds=(280, 350),
+        lat_bounds=(30, 65),
+        filtersize_t=30,
+        filtersize_p=5,
+    )
 
     # Trajectory calculations
     for case_name in case_studies:
@@ -40,7 +70,7 @@ def main():
     inflow.from_3d_trajectories(case_studies["IOP7"])
 
     outflow.at_inflow_time(case_studies["IOP3"])
-    #outflow.at_inflow_time(case_studies["IOP5"])
+    outflow.at_inflow_time(case_studies["IOP5"])
     outflow.at_inflow_time(case_studies["IOP6"])
     outflow.at_inflow_time(case_studies["IOP7"])
 
