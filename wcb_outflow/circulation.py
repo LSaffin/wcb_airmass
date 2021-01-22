@@ -25,11 +25,10 @@ base_time_units = "hours since 1970-01-01 00:00:00"
 
 
 def calc_circulation(case, dtheta=1):
-    tr = trajectory.load(case.data_path / "isentropic_trajectories.pkl") + \
+    tr = trajectory.load(case.data_path / "isentropic_trajectories_backward.pkl") + \
          trajectory.load(case.data_path / "isentropic_trajectories_forward.pkl")
 
     ntra, nt, ndim = tr.data.shape
-    print(tr)
 
     time = [(t - base_time).total_seconds() // 3600 for t in tr.times]
     time = iris.coords.DimCoord(

@@ -16,7 +16,7 @@ from wcb_outflow import case_studies
 
 
 def main():
-    fig = plt.figure(figsize=[8, 5])
+    fig = plt.figure(figsize=[8, 6])
 
     for n, case_name in enumerate(case_studies):
         case = case_studies[case_name]
@@ -39,7 +39,7 @@ def main():
         )
 
         # Load the isentropic trajectories on the isentropic level of the forecast data
-        tr = trajectory.load(case.data_path / "isentropic_trajectories.pkl")
+        tr = trajectory.load(case.data_path / "isentropic_trajectories_backward.pkl")
         tr = tr.select("air_potential_temperature", "==", theta_level,
                        time=[tr.relative_times[0]])
 
