@@ -4,82 +4,82 @@ Rerunning through everything in Jake's everything_script
 
 import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from wcb_outflow import case_studies, outflow, trajectories, inflow, circulation
 
 
 def main():
+    warnings.filterwarnings("ignore", category=UserWarning)
+
     # Define initial outflow volumes
-    theta_levels = np.arange(300, 350, 5)
     outflow.outflow_th(
         case_studies["IOP3"],
-        theta_levels,
+        theta_levels = np.arange(320, 335, 5),
         lon_bounds=(335, 400),
-        lat_bounds=(40, 75),
+        lat_bounds=(30, 75),
         filtersize_t=25,
-        filtersize_p=1,
+        filtersize_p=5,
         save=True,
     )
 
     outflow.outflow_th(
         case_studies["IOP5"],
-        theta_levels,
-        lon_bounds=(300, 375),
-        lat_bounds=(20, 65),
-        filtersize_t=30,
-        filtersize_p=30,
+        theta_levels=np.arange(315, 345, 5),
+        lon_bounds=(320, 375),
+        lat_bounds=(30, 65),
+        filtersize_t=25,
+        filtersize_p=5,
+        save=True,
     )
+
     outflow.outflow_th(
         case_studies["IOP6"],
-        theta_levels[1:],
+        theta_levels=np.arange(305, 330, 5),
         lon_bounds=(310, 365),
-        lat_bounds=(40, 75),
-        filtersize_t=30,
-        filtersize_p=30,
+        lat_bounds=(30, 75),
+        filtersize_t=25,
+        filtersize_p=5,
+        save=True,
     )
+
     outflow.outflow_th(
         case_studies["IOP7"],
-        theta_levels,
-        lon_bounds=(280, 350),
+        theta_levels=np.arange(310, 350, 5),
+        lon_bounds=(280, 360),
         lat_bounds=(30, 65),
-        filtersize_t=30,
+        filtersize_t=25,
         filtersize_p=5,
+        save=True,
     )
+
+    plt.show()
 
     # Trajectory calculations
     for case_name in case_studies:
-        trajectories.preprocess_winds(case_studies[case_name])
+        case = case_studies[case_name]
+        trajectories.preprocess_winds(case)
 
         # Isentropic circuit trajectories
         # Backward
-        trajectories.isentropic_trajectories(case_studies[case_name])
+        trajectories.isentropic_trajectories(case)
         # and forward
-        trajectories.isentropic_trajectories(case_studies[case_name], fbflag=1)
+        trajectories.isentropic_trajectories(case, fbflag=1)
 
         # 3d back trajectories
-        trajectories.lagrangian_trajectories(case_studies[case_name])
+        trajectories.lagrangian_trajectories(case)
 
         # Isentropic trajectories from the same points as 3d trajectories
-        trajectories.isentropic_trajectories_from_volume(case_studies[case_name])
+        trajectories.isentropic_trajectories_from_volume(case)
 
-    # Inflow regions
-    inflow.from_3d_trajectories(case_studies["IOP3"])
-    inflow.from_3d_trajectories(case_studies["IOP5"])
-    inflow.from_3d_trajectories(case_studies["IOP6"])
-    inflow.from_3d_trajectories(case_studies["IOP7"])
+        # Circulation
+        circulation.calc_circulation(case)
 
-    outflow.at_inflow_time(case_studies["IOP3"])
-    outflow.at_inflow_time(case_studies["IOP5"])
-    outflow.at_inflow_time(case_studies["IOP6"])
-    outflow.at_inflow_time(case_studies["IOP7"])
+        # Inflow regions
+        inflow.from_3d_trajectories(case)
 
-    # Circulation
-    warnings.filterwarnings("ignore", category=UserWarning)
-    circulation.calc_circulation(case_studies["IOP3"])
-    circulation.calc_circulation(case_studies["IOP5"])
-    circulation.calc_circulation(case_studies["IOP6"])
-    circulation.calc_circulation(case_studies["IOP7"])
+        outflow.at_inflow_time(case)
 
 
 if __name__ == "__main__":
