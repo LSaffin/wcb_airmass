@@ -24,11 +24,15 @@ base_time = datetime.datetime(1970, 1, 1)
 base_time_units = "hours since 1970-01-01 00:00:00"
 
 
-def calc_circulation(case, dtheta=1):
-    tr = trajectory.load(case.data_path / "isentropic_trajectories_backward.pkl") + \
-         trajectory.load(case.data_path / "isentropic_trajectories_forward.pkl")
+def calc_circulation(case, dtheta=1, region="outflow"):
+    if region == "outflow":
+        tr = trajectory.load(case.data_path / "isentropic_trajectories_backward.pkl") + \
+             trajectory.load(case.data_path / "isentropic_trajectories_forward.pkl")
+    elif region == "inflow":
+        tr = trajectory.load(case.data_path / "isentropic_trajectories_from_inflow_forward.pkl")
 
     ntra, nt, ndim = tr.data.shape
+    theta = np.unique(tr["air_potential_temperature"])
 
     time = [(t - base_time).total_seconds() // 3600 for t in tr.times]
     time = iris.coords.DimCoord(
@@ -38,13 +42,13 @@ def calc_circulation(case, dtheta=1):
     )
 
     theta_levels = iris.coords.DimCoord(
-        points=case.outflow_theta,
+        points=theta,
         standard_name="air_potential_temperature",
         units="K",
     )
 
     circ = iris.cube.Cube(
-        data=np.empty([len(case.outflow_theta), nt]),
+        data=np.empty([len(theta), nt]),
         long_name="circulation",
         units="m2 s-1",
         dim_coords_and_dims=[(theta_levels, 0), (time, 1)]
@@ -59,10 +63,8 @@ def calc_circulation(case, dtheta=1):
     results = iris.cube.CubeList([circ, circ_r, circ_p])
 
     # Repeat for all theta levels
-    for j, theta_level in enumerate(case.outflow_theta):
-        tr_theta = tr.select(
-            "air_potential_temperature", "==", theta_level, [case.outflow_lead_time]
-        )
+    for j, theta_level in enumerate(theta):
+        tr_theta = tr.select("air_potential_temperature", "==", theta_level)
 
         results_intermediate = iris.cube.CubeList()
 
@@ -112,7 +114,7 @@ def calc_circulation(case, dtheta=1):
         for cube in results_intermediate.merge():
             results.append(cube)
 
-    iris.save(results.merge(), str(case.data_path / "circulation.nc"))
+    iris.save(results.merge(), str(case.data_path / "circulation_{}.nc".format(region)))
     return
 
 

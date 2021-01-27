@@ -31,20 +31,39 @@ def preprocess_winds(case):
         iris.save(newcubes, case.filename_winds(time))
 
 
-def isentropic_trajectories(case, fbflag=-1):
+def isentropic_trajectories(case, fbflag=-1, region="outflow"):
     # Get the outflow points for the selected theta levels
-    trainp = np.load(str(case.data_path / "outflow_boundaries.npy"))
-    trainp = np.vstack(
-        trainp[np.where(trainp[:, 2] == theta)] for theta in case.outflow_theta
-    )
+    trainp = np.load(str(case.data_path / "{}_boundaries.npy".format(region)))
 
-    levels = ("air_potential_temperature", case.outflow_theta)
+    if region == "outflow":
+        theta_levels = case.outflow_theta
+        trainp = np.vstack(
+            trainp[np.where(trainp[:, 2] == theta)] for theta in theta_levels
+        )
+
+    elif region == "inflow":
+        theta_levels = list(range(280, case.outflow_theta[-1]+1, 5))
+
+        trainp2 = np.zeros([trainp.shape[0], trainp.shape[1]+1])
+        trainp2[:, :2] = trainp
+        trainp2 = np.vstack([trainp2 for theta in theta_levels])
+
+        npoints = trainp.shape[0]
+        for n, theta in enumerate(theta_levels):
+            trainp2[npoints*n:npoints*(n+1), 2] = theta
+        trainp = trainp2
+
+    levels = ("air_potential_temperature", theta_levels)
 
     if fbflag == 1:
-        fname = "forward"
-        mapping = case.time_to_filename_winds_mapping(
-            start=case.outflow_time, end=case.forecast_end_time
-        )
+        if region == "outflow":
+            fname = "forward"
+            mapping = case.time_to_filename_winds_mapping(
+                start=case.outflow_time, end=case.forecast_end_time
+            )
+        elif region == "inflow":
+            fname = "from_inflow_forward"
+            mapping = case.time_to_filename_winds_mapping()
     elif fbflag == -1:
         fname = "backward"
         mapping = case.time_to_filename_winds_mapping()

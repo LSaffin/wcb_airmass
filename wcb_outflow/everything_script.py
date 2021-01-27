@@ -63,7 +63,7 @@ def main():
 
         # Isentropic circuit trajectories
         # Backward
-        trajectories.isentropic_trajectories(case)
+        trajectories.isentropic_trajectories(case, fbflag=-1)
         # and forward
         trajectories.isentropic_trajectories(case, fbflag=1)
 
@@ -79,7 +79,9 @@ def main():
         # Inflow regions
         inflow.from_3d_trajectories(case)
 
-        outflow.at_inflow_time(case)
+        # Isentropic trajectories from the inflow
+        trajectories.isentropic_trajectories(case, fbflag=1, region="inflow")
+        circulation.calc_circulation(case, region="inflow")
 
 
 if __name__ == "__main__":
