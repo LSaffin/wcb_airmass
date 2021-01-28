@@ -54,6 +54,7 @@ def main():
             inflow_points[:, 0] - 360, inflow_points[:, 1],
             color="magenta",
             lw=3,
+            alpha=0.5,
             transform=crs
         )
 

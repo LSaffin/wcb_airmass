@@ -30,18 +30,18 @@ def main():
     fig = plt.figure(figsize=(8,5))
     ax = fig.gca(projection='3d')
 
-    plot_trajectory_selection(ax, tr_3d.x, tr_3d.y, tr_3d["air_potential_temperature"], plt.cm.cubehelix(tr_3d.z/10000), spacing=100)
+    plot_trajectory_selection(ax, tr_3d.x-360, tr_3d.y, tr_3d["air_potential_temperature"], plt.cm.cubehelix(tr_3d.z/10000), spacing=100)
 
-    ax.plot(outflow.x[:, 0], outflow.y[:, 0], outflow.z[:, 0], color="C0", lw=3)
+    ax.plot(outflow.x[:, 0]-360, outflow.y[:, 0], outflow.z[:, 0], color="C0", lw=3)
     idx = np.where(outflow.x[:, -1] != -1000)[0]
-    ax.plot(outflow.x[idx, -1], outflow.y[idx, -1], outflow.z[idx, -1], color="C0", lw=3)
+    ax.plot(outflow.x[idx, -1]-360, outflow.y[idx, -1], outflow.z[idx, -1], color="C0", lw=3)
 
-    ax.plot(inflow.x[:, 0], inflow.y[:, 0], inflow.z[:, 0], color="C1", lw=3)
-    ax.plot(inflow.x[:, -1], inflow.y[:, -1], inflow.z[:, -1], color="C1", lw=3)
+    ax.plot(inflow.x[:, 0]-360, inflow.y[:, 0], inflow.z[:, 0], color="C1", lw=3)
+    ax.plot(inflow.x[:, -1]-360, inflow.y[:, -1], inflow.z[:, -1], color="C1", lw=3)
 
     plot_trajectory_selection(
         ax,
-        outflow.x[idx, :],
+        outflow.x[idx, :]-360,
         outflow.y[idx, :],
         outflow["air_potential_temperature"][idx, :],
         "C0",
@@ -51,13 +51,17 @@ def main():
 
     plot_trajectory_selection(
         ax,
-        inflow.x,
+        inflow.x-360,
         inflow.y,
         inflow["air_potential_temperature"],
         "C1",
         spacing=10,
         alpha=0.25,
     )
+
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_zlabel(r"$\theta$ (K)")
 
     plt.show()
 

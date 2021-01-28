@@ -59,14 +59,14 @@ def main():
 
 
 def make_plot(ax, dtheta, pv, tr):
-    im = iplt.pcolormesh(dtheta, vmin=-30, vmax=30, cmap="seismic")
+    background_map(ax, pv)
+
+    im = iplt.pcolormesh(dtheta, vmin=-30, vmax=30, cmap="seismic", zorder=1)
 
     # Need to use the cube's coordinate reference system to properly add regular
     # coordinates on top
     crs = dtheta.coord(axis="x").coord_system.as_cartopy_crs()
-    plt.plot(tr.x[:, 0] - 360, tr.y[:, 0], transform=crs, lw=3, color='cyan')
-
-    background_map(ax, pv)
+    plt.plot(tr.x[:, 0] - 360, tr.y[:, 0], transform=crs, lw=3, color='cyan', zorder=40)
 
     return im
 
