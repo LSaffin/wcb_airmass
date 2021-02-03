@@ -4,12 +4,11 @@
 Circulation and mass vs time for the identified outflow regions in each case study
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 import iris
 
-from wcb_outflow import case_studies
+from wcb_outflow import case_studies, calc
 
 
 def main():
@@ -28,21 +27,19 @@ def main():
             )
 
             circ = cubes_theta.extract_strict("circulation")
-            dt = circ.coord("time")
-            dt.convert_units("Hours Since {}".format(case_study.start_time.strftime("%Y-%m-%d %H:%M:%S")))
+            dt, outflow_time = calc.timediff(circ, case_study)
 
             color = "C{}".format(m)
             ax1 = plt.axes(axes[0, n])
-            ax1.plot(dt.points, circ.data, color=color)
+            ax1.plot(dt, circ.data, color=color, label="{}K".format(theta_level))
 
             circ_m = cubes_theta.extract_strict("mass_integrated_circulation")
-            dt = circ_m.coord("time")
-            dt.convert_units("Hours Since {}".format(case_study.start_time.strftime("%Y-%m-%d %H:%M:%S")))
-            ax1.plot(dt.points, circ_m.data, color=color, linestyle="--", alpha=0.5)
+            dt, outflow_time = calc.timediff(circ_m, case_study)
+            ax1.plot(dt, circ_m.data, color=color, linestyle="--", alpha=0.5)
 
             ax2 = plt.axes(axes[1, n])
             mass = cubes_theta.extract_strict("mass")
-            ax2.plot(dt.points, mass.data, color=color, linestyle="--", label="{}K".format(theta_level))
+            ax2.plot(dt, mass.data, color=color, linestyle="--")
 
         _, ymax = axes[0, n].get_ylim()
         axes[0, n].set_ylim([0, ymax])
@@ -54,15 +51,15 @@ def main():
         axes[1, n].set_xlim(0, 90)
         axes[1, n].set_xticks(range(0, 90, 12))
 
-        axes[0, n].axvline(case_study.outflow_lead_time.total_seconds() / 3600, color="k")
-        axes[1, n].axvline(case_study.outflow_lead_time.total_seconds() / 3600, color="k")
+        axes[0, n].axvline(outflow_time, color="k")
+        axes[1, n].axvline(outflow_time, color="k")
 
-        axes[1, n].legend(loc="lower right")
+        axes[0, n].legend(loc="lower right")
 
     axes[0, 0].set_ylabel(r"Circulation (m$^2$s$^{-1}$)")
     axes[1, 0].set_ylabel(r"Mass (Kg)")
 
-    fig.text(0.5, 0.05, "Forecast Lead Time (hours)", ha="center")
+    fig.text(0.5, 0.01, "Forecast Lead Time (hours)", ha="center")
 
     plt.show()
 
