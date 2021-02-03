@@ -13,15 +13,16 @@ from wcb_outflow import case_studies
 
 
 def main():
-    fig, axes = plt.subplots(4, 2, sharex="all", figsize=(8, 10))
+    fig, axes = plt.subplots(2, 4, sharex="all", figsize=(16, 5))
 
     for n, case in enumerate(case_studies):
         print(case)
         case_study = case_studies[case]
         cubes = iris.load(str(case_study.data_path / "circulation.nc"))
 
+        axes[0, n].set_title(case)
+
         for m, theta_level in enumerate(case_study.outflow_theta):
-            print(theta_level)
             cubes_theta = cubes.extract(iris.Constraint(
                 air_potential_temperature=theta_level)
             )
@@ -30,39 +31,36 @@ def main():
             dt = circ.coord("time")
             dt.convert_units("Hours Since {}".format(case_study.start_time.strftime("%Y-%m-%d %H:%M:%S")))
 
-            plt.axes(axes[n, 0])
-            plt.plot(dt.points, circ.data, color="C{}".format(m))
+            color = "C{}".format(m)
+            ax1 = plt.axes(axes[0, n])
+            ax1.plot(dt.points, circ.data, color=color)
 
             circ_m = cubes_theta.extract_strict("mass_integrated_circulation")
             dt = circ_m.coord("time")
             dt.convert_units("Hours Since {}".format(case_study.start_time.strftime("%Y-%m-%d %H:%M:%S")))
-            plt.plot(dt.points, circ_m.data, color="C{}".format(m), linestyle="--", alpha=0.5)
+            ax1.plot(dt.points, circ_m.data, color=color, linestyle="--", alpha=0.5)
 
-            plt.axes(axes[n, 1])
+            ax2 = plt.axes(axes[1, n])
             mass = cubes_theta.extract_strict("mass")
-            print(np.diff(mass.data))
-            plt.plot(dt.points, mass.data, color="C{}".format(m), linestyle="--", label="{}K".format(theta_level))
+            ax2.plot(dt.points, mass.data, color=color, linestyle="--", label="{}K".format(theta_level))
 
-        _, ymax = axes[n, 0].get_ylim()
-        axes[n, 0].set_ylim([0, ymax])
-        _, ymax = axes[n, 1].get_ylim()
-        axes[n, 1].set_ylim([0, ymax])
-        axes[n, 1].yaxis.set_label_position("right")
-        axes[n, 1].yaxis.tick_right()
+        _, ymax = axes[0, n].get_ylim()
+        axes[0, n].set_ylim([0, ymax])
+        _, ymax = axes[1, n].get_ylim()
+        axes[1, n].set_ylim([0, ymax])
 
-        axes[n, 0].set_xlim(0, 90)
-        axes[n, 0].set_xticks(range(0, 90, 12))
-        axes[n, 1].set_xlim(0, 90)
-        axes[n, 1].set_xticks(range(0, 90, 12))
+        axes[0, n].set_xlim(0, 90)
+        axes[0, n].set_xticks(range(0, 90, 12))
+        axes[1, n].set_xlim(0, 90)
+        axes[1, n].set_xticks(range(0, 90, 12))
 
-        axes[n, 0].axvline(case_study.outflow_lead_time.total_seconds() / 3600, color="k")
-        axes[n, 1].axvline(case_study.outflow_lead_time.total_seconds() / 3600, color="k")
+        axes[0, n].axvline(case_study.outflow_lead_time.total_seconds() / 3600, color="k")
+        axes[1, n].axvline(case_study.outflow_lead_time.total_seconds() / 3600, color="k")
 
-        axes[n, 1].legend(loc="lower right")
-        axes[n, 0].set_ylabel(case_study.name)
+        axes[1, n].legend(loc="lower right")
 
-    fig.text(0.05, 0.5, r"Circulation (m$^2$s$^{-1}$)", rotation="vertical", va="center")
-    fig.text(0.95, 0.5, r"Mass (Kg)", rotation="vertical", va="center")
+    axes[0, 0].set_ylabel(r"Circulation (m$^2$s$^{-1}$)")
+    axes[1, 0].set_ylabel(r"Mass (Kg)")
 
     fig.text(0.5, 0.05, "Forecast Lead Time (hours)", ha="center")
 
