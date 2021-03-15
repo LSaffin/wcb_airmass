@@ -17,7 +17,10 @@ diagnostics = [
     "mass_integrated_circulation",
     "mass",
     "area",
-    "mass_integrated_vorticity"
+    "mass_integrated_vorticity",
+    "vorticity",
+    "relative_vorticity",
+    "planetary_vorticity",
 ]
 
 
@@ -50,8 +53,18 @@ def main():
             for name in diagnostics:
                 cube = calc.get_cube_by_name(cubes_theta, name)
 
-                # Percentage change from start to end, relative to initial value
-                diff = calc.diff(cube, idx_0=idx_inflow) * 100
+                if "vorticity" in name:
+                    if name == "vorticity":
+                        vort_0 = cube[idx_inflow]
+
+                    if name == "vorticity" or name == "mass_integrated_vorticity":
+                        diff = calc.diff(cube, idx_0=idx_inflow) * 100
+                    else:
+                        diff = ((cube - cube[idx_inflow]) / vort_0) * 100
+
+                else:
+                    # Percentage change from start to end, relative to initial value
+                    diff = calc.diff(cube, idx_0=idx_inflow) * 100
 
                 try:
                     # Round to 2 decimal places to make the table neater

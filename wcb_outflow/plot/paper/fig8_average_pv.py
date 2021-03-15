@@ -10,6 +10,7 @@ import iris
 
 from wcb_outflow import case_studies
 from wcb_outflow.plot.paper.fig7_bulk_fraction import time_zero
+from wcb_outflow.plot import set_plot_rcparams
 
 
 # Lowest isentropic layer where the inflow doesn't intersect the ground at any time
@@ -22,7 +23,8 @@ theta_min = dict(
 
 
 def main():
-    fig, axes = plt.subplots(2, 2, figsize=(8, 5), sharex="all", sharey="row")
+    set_plot_rcparams()
+    fig, axes = plt.subplots(2, 2, figsize=(8, 6), sharex="all", sharey="row")
     for n, case in enumerate(case_studies):
         ax = plt.axes(axes[n // 2, n % 2])
         make_figure(case_studies[case])
@@ -32,8 +34,9 @@ def main():
     axes[0, 0].set_xlim(0, xmax)
 
     legend_elements = [
-        Line2D([0], [0], color="k", marker="o", linestyle="", label="Outflow Time"),
-        Line2D([0], [0], color="k", marker="D", linestyle="", label=r'"Inflow Time"')
+        Line2D([0], [0], color="k", marker="o", linestyle="", label=r"$t=t_{out}$"),
+        Line2D([0], [0], color="k", marker="s", linestyle="", label=r"$t=t_{out} - \Delta t$"),
+        Line2D([0], [0], color="k", marker="D", linestyle="", label=r"$t=t_0$")
     ]
 
     # Create the figure
@@ -68,8 +71,8 @@ def make_figure(case):
         )
 
         plt.plot((cube_inflow_time.data + cube_outflow_time.data) / 2, theta, "k<")
-        plt.plot(cube_inflow_time.data, theta, "bD")
-        plt.plot(cube_outflow_time.data, theta, "bo")
+        plt.plot(cube_inflow_time.data, theta, "cs")
+        plt.plot(cube_outflow_time.data, theta, "co")
 
     # Dividing line between inflow and outflow
     plt.axhline(case.outflow_theta[0] - 2.5, color="k", linewidth=1)
@@ -94,8 +97,8 @@ def make_figure(case):
         )
 
         plt.plot((cube_inflow_time.data + cube_outflow_time.data) / 2, theta, "k>")
-        plt.plot(cube_inflow_time.data, theta, "rD")
-        plt.plot(cube_outflow_time.data, theta, "ro")
+        plt.plot(cube_inflow_time.data, theta, "mD")
+        plt.plot(cube_outflow_time.data, theta, "mo")
 
     return
 

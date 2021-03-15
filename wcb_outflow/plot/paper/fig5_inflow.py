@@ -15,7 +15,7 @@ from wcb_outflow.plot import background_map, projection
 
 
 def main():
-    plt.figure(figsize=[8, 5])
+    plt.figure(figsize=[8, 7])
     for m, case_name in enumerate(case_studies):
         case = case_studies[case_name]
 
@@ -58,7 +58,10 @@ def main():
             transform=crs
         )
 
-        ax.set_title("{}".format(case.name))
+        ax.set_title("{} \n {} ($t_0$)".format(
+            case.name,
+            case.start_time.strftime("%d/%m %H UTC"),
+        ))
 
     plt.show()
 

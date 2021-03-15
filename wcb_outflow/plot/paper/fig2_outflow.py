@@ -11,12 +11,13 @@ import iris.plot as iplt
 
 from pylagranto import trajectory
 
-from wcb_outflow.plot import background_map, projection
+from wcb_outflow.plot import background_map, projection, set_map_rcparams
 from wcb_outflow import case_studies
 
 
 def main():
-    fig = plt.figure(figsize=[8, 6])
+    set_map_rcparams()
+    fig = plt.figure(figsize=[8, 9])
 
     for n, case_name in enumerate(case_studies):
         case = case_studies[case_name]
@@ -46,7 +47,12 @@ def main():
         ax = plt.subplot(2, 2, n+1, projection=projection)
         im = make_plot(ax, dtheta, pv, tr)
 
-        ax.set_title("{}: {}K".format(case.name, int(theta_level)))
+        ax.set_title("{}: {} K \n {} ($t_0 + {}$h)".format(
+            case.name,
+            int(theta_level),
+            case.start_time.strftime("%d/%m %H UTC"),
+            int(case.outflow_lead_time.total_seconds() // 3600),
+        ))
 
     plt.subplots_adjust(bottom=0.2)
     cax = plt.axes([0.1, 0.1, 0.8, 0.05])

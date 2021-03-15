@@ -4,15 +4,17 @@ import matplotlib.pyplot as plt
 from pylagranto import trajectory
 
 from wcb_outflow import case_studies
+from wcb_outflow.plot import set_plot_rcparams
 
 
 def main():
+    #set_plot_rcparams()
     fig, axes = plt.subplots(2, 2, sharex="all", sharey="all", figsize=(8, 5))
     for n, case in enumerate(case_studies):
-        plt.axes(axes[n % 2, n // 2])
+        plt.axes(axes[n // 2, n % 2])
         make_plot(case_studies[case])
 
-    fig.text(0.5, 0.01, "Time (hours)", ha="center")
+    fig.text(0.5, 0.01, "Forecast Lead Time (hours)", ha="center")
     fig.text(0.05, 0.5, r"$\theta$ (K)", rotation="vertical", va="center")
     plt.legend()
 

@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib as mpl
 from matplotlib.path import Path
 import cartopy.crs as ccrs
 
@@ -29,3 +29,15 @@ def background_map(ax, pv):
     iplt.contour(pv, [2], colors='k', zorder=30)
     pv.data = (pv.data > 2).astype(float)
     iplt.contourf(pv, [0.9, 1.1], colors="k", alpha=0.25, zorder=20)
+
+
+def set_map_rcparams():
+    mpl.rcParams["figure.subplot.left"] = 0.0
+    mpl.rcParams["figure.subplot.right"] = 1.0
+    mpl.rcParams["figure.subplot.wspace"] = 0.0
+
+
+def set_plot_rcparams():
+    mpl.rcParams["figure.subplot.right"] = 0.95
+    mpl.rcParams["figure.subplot.bottom"] = 0.05
+    mpl.rcParams["figure.subplot.top"] = 0.95

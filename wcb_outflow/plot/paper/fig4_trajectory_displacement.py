@@ -12,6 +12,7 @@ from pylagranto import trajectory
 
 from wcb_outflow import case_studies
 from wcb_outflow.outflow import haversine
+from wcb_outflow.plot import set_plot_rcparams
 
 
 # Adjustable plot parameters
@@ -23,9 +24,10 @@ time_index = -1
 
 
 def main():
+    set_plot_rcparams()
     fig, axes = plt.subplots(2, 2, sharex="all", sharey="all", figsize=(8, 6))
     for m, case_name in enumerate(case_studies):
-        ax = axes[m % 2, m // 2]
+        ax = axes[m // 2, m % 2]
         case = case_studies[case_name]
         tr = trajectory.load(case.data_path / "isentropic_trajectories_from_volume.pkl")
         tr3d = trajectory.load(case.data_path / "3d_trajectories.pkl")
