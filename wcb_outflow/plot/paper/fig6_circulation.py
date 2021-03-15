@@ -33,17 +33,17 @@ def main():
                 air_potential_temperature=theta_level)
             )
 
-            circ = cubes_theta.extract_strict("circulation")
+            circ = cubes_theta.extract_cube("circulation")
             dt, outflow_time = calc.timediff(circ, case_study)
 
             color = "C{}".format(m)
             ax1.plot(dt, circ.data, color=color, label="{}K".format(theta_level))
 
-            circ_m = cubes_theta.extract_strict("mass_integrated_circulation")
+            circ_m = cubes_theta.extract_cube("mass_integrated_circulation")
             dt, outflow_time = calc.timediff(circ_m, case_study)
             ax1.plot(dt, circ_m.data, color=color, linestyle="--", alpha=0.5)
 
-            mass = cubes_theta.extract_strict("mass")
+            mass = cubes_theta.extract_cube("mass")
             ax2.plot(dt, mass.data, color=color, linestyle="--")
 
         _, ymax = ax1.get_ylim()

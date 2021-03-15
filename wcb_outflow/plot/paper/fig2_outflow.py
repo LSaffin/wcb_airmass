@@ -28,12 +28,12 @@ def main():
             case.filename_theta(case.outflow_time),
             iris.Constraint(time=case.outflow_time)
         )
-        pv = cubes.extract_strict(
+        pv = cubes.extract_cube(
             iris.Constraint(
                 "ertel_potential_vorticity",
                 air_potential_temperature=theta_level)
         )
-        dtheta = cubes.extract_strict(
+        dtheta = cubes.extract_cube(
             iris.Constraint(
                 "total_minus_adv_only_theta",
                 air_potential_temperature=theta_level)

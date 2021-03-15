@@ -46,21 +46,21 @@ def get_cube_by_name(cubes, name):
     elif name=="mass area anomaly ratio":
         cube = ratio(cubes)
     else:
-        cube = cubes.extract_strict(name)
+        cube = cubes.extract_cube(name)
 
     return cube
 
 
 def density(cubes):
-    mass = cubes.extract_strict("mass")
-    area = cubes.extract_strict("area")
+    mass = cubes.extract_cube("mass")
+    area = cubes.extract_cube("area")
 
     return mass / area
 
 
 def vorticity(cubes, circulation_name=""):
-    area = cubes.extract_strict("area")
-    circulation = cubes.extract_strict(circulation_name + "circulation")
+    area = cubes.extract_cube("area")
+    circulation = cubes.extract_cube(circulation_name + "circulation")
 
     area, circulation = equate_times(area.copy(), circulation.copy())
 
@@ -68,16 +68,16 @@ def vorticity(cubes, circulation_name=""):
 
 
 def potential_vorticity(cubes, circulation_name=""):
-    mass = cubes.extract_strict("mass")
-    circulation = cubes.extract_strict(circulation_name + "circulation")
+    mass = cubes.extract_cube("mass")
+    circulation = cubes.extract_cube(circulation_name + "circulation")
     mass, circulation = equate_times(mass.copy(), circulation.copy())
 
     return circulation / mass
 
 
 def ratio(cubes):
-    mass = cubes.extract_strict("mass")
-    area = cubes.extract_strict("area")
+    mass = cubes.extract_cube("mass")
+    area = cubes.extract_cube("area")
 
     alpha = diff(mass)
     epsilon = diff(area)

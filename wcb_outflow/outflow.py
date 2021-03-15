@@ -53,9 +53,9 @@ def outflow_th(
         iris.Constraint(time=case.outflow_time)
     )
 
-    dtheta = cubes.extract_strict("total_minus_adv_only_theta")
+    dtheta = cubes.extract_cube("total_minus_adv_only_theta")
     z = cubes.extract("altitude")[0]
-    pv = cubes.extract_strict("ertel_potential_vorticity")
+    pv = cubes.extract_cube("ertel_potential_vorticity")
     crs = pv.coord(axis="x").coord_system.as_cartopy_crs()
 
     fig = plt.figure(figsize=(8, 20))

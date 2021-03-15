@@ -42,6 +42,17 @@ def main():
         time=[tr.relative_times[0]]
     )
 
+    tr3d = trajectory.load(case.data_path / "3d_trajectories.pkl")
+    tr3d = tr3d.select(
+        "air_potential_temperature", ">", case.outflow_theta[0] - 1,
+        time=[tr.relative_times[0]]
+    )
+
+    tr3d = tr3d.select(
+        "air_potential_temperature", "<", case.outflow_theta[-1] + 1,
+        time=[tr.relative_times[0]]
+    )
+
     for n, time in enumerate(times):
         print(time)
         pv = iris.load_cube(
@@ -58,6 +69,12 @@ def main():
 
         idx = tr.times.index(time)
         plt.plot(tr_theta.x[:, idx] - 360, tr_theta.y[:, idx], transform=crs)
+        tr3d_inflow = tr3d.select(
+            "air_potential_temperature", "<", case.outflow_theta[0] - 5,
+            time=[tr.relative_times[idx]]
+        )
+
+        plt.scatter(tr3d_inflow.x[:, idx] - 360, tr3d_inflow.y[:, idx], c=tr3d_inflow.z[:, idx]/10000, transform=crs, marker=".")
         ax.set_title(time)
     fig.suptitle("{}: {:.0f}K".format(case.name, theta_level))
     plt.show()

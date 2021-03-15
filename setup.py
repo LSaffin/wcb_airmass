@@ -28,7 +28,7 @@ setup(
         "numpy",
         "matplotlib",
         "scipy",
-        "scitools-iris",
+        "scitools-iris>=3.0",
         "cartopy",
         "pylagranto",
     ],
