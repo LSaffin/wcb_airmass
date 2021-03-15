@@ -11,10 +11,11 @@ import iris
 from pylagranto import trajectory
 
 from wcb_outflow import case_studies, outflow
-from wcb_outflow.plot import background_map, projection
+from wcb_outflow.plot import background_map, projection, set_map_rcparams
 
 
 def main():
+    set_map_rcparams()
     plt.figure(figsize=[8, 7])
     for m, case_name in enumerate(case_studies):
         case = case_studies[case_name]

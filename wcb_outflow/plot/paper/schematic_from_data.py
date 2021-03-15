@@ -37,7 +37,7 @@ def main():
     tr_3d = tr_3d.select("air_potential_temperature", "<", case.outflow_theta[1] + 1, time=[tr_3d.relative_times[0]])
     tr_3d = tr_3d.select("air_potential_temperature", ">", 0)
 
-    fig = plt.figure(figsize=(8, 6))
+    fig = plt.figure(figsize=(8, 7))
     ax = fig.gca(projection='3d')
 
     plot_trajectory_selection(ax, tr_3d.x-360, tr_3d.y, tr_3d["air_potential_temperature"], cmap((tr_3d["air_potential_temperature"] - 300)/25), spacing=100)
