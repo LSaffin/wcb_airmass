@@ -2,7 +2,7 @@
 Plot the average PV in the inflow and outflow regions at the inflow and outflow times
 """
 
-
+import matplotlib as mpl
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 
@@ -24,6 +24,7 @@ theta_min = dict(
 
 def main():
     set_plot_rcparams()
+    mpl.rcParams["figure.subplot.bottom"] = 0.1
     fig, axes = plt.subplots(2, 2, figsize=(8, 6), sharex="all", sharey="row")
     for n, case in enumerate(case_studies):
         ax = plt.axes(axes[n // 2, n % 2])
@@ -49,7 +50,7 @@ def main():
 
 
 def make_figure(case):
-    pv_outflow = load_PV(str(case.data_path / "circulation.nc"))
+    pv_outflow = load_PV(str(case.data_path / "circulation_outflow.nc"))
 
     for theta in case.outflow_theta:
         cube_outflow_time = pv_outflow.extract(iris.Constraint(
