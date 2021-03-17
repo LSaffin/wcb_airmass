@@ -8,12 +8,13 @@ circuit.
 import datetime
 
 import numpy as np
+import matplotlib.pyplot as plt
 from matplotlib.path import Path
 
 import iris
 from iris.analysis import SUM, cartography
 
-from irise import convert
+from irise import convert, plot
 from irise.constants import Omega
 
 from pylagranto import trajectory
@@ -33,6 +34,7 @@ def calc_circulation(case, dtheta=1, region="outflow"):
 
     ntra, nt, ndim = tr.data.shape
     theta = np.unique(tr["air_potential_temperature"])
+    theta = theta[np.where(theta != -1000)]
 
     time = [(t - base_time).total_seconds() // 3600 for t in tr.times]
     time = iris.coords.DimCoord(
@@ -64,7 +66,8 @@ def calc_circulation(case, dtheta=1, region="outflow"):
 
     # Repeat for all theta levels
     for j, theta_level in enumerate(theta):
-        tr_theta = tr.select("air_potential_temperature", "==", theta_level)
+        tr_theta = tr.select("air_potential_temperature", "==", theta_level,
+                             time=[case.outflow_lead_time])
 
         results_intermediate = iris.cube.CubeList()
 
@@ -107,6 +110,7 @@ def calc_circulation(case, dtheta=1, region="outflow"):
             integrals = mass_integrals(cubes, lon, lat, theta_level, dtheta, dlambda, dphi)
 
             for icube in integrals:
+                icube.attributes = {}
                 # Set integrals to NaN if trajectories have left the domain
                 if (alt == -1000).any():
                     icube.data = np.nan
@@ -190,7 +194,7 @@ def mass_integrals(cubes, lon, lat, theta_level, dtheta, dlambda, dphi):
     zth = convert.calc('altitude', cubes, levels=levels)
 
     # Extract model output grid
-    glon, glat = cartography.get_xy_grids(zth)
+    glon, glat = np.float64(cartography.get_xy_grids(zth))
     gridpoints = np.array([glon.flatten(), glat.flatten()]).transpose()
 
     # Mask all points that are not contained in the circuit
@@ -206,8 +210,6 @@ def mass_integrals(cubes, lon, lat, theta_level, dtheta, dlambda, dphi):
 
     # Volume = area * dz
     volume = area * (zth[2] - zth[0])
-    # theta coordinate disappears here
-    volume.add_aux_coord(area.coord("air_potential_temperature"))
     volume.rename('volume')
     total_volume = integrate(volume, mask)
 
@@ -223,10 +225,18 @@ def mass_integrals(cubes, lon, lat, theta_level, dtheta, dlambda, dphi):
     pv.convert_units('m^2 K s-1 kg-1')
     pv_substance = pv * mass
     circulation = integrate(pv_substance, mask) / dtheta
+    circulation.units = "s-1"
 
     circulation.rename('mass_integrated_circulation')
 
-    return total_area, total_volume, total_mass, circulation
+    # Average of the Coriolis parameter
+    f = 2 * Omega.data * np.sin(np.deg2rad(glat))
+    f = pv_substance.copy(data=f) * area
+    f = integrate(f, mask) / total_area
+    f.rename("coriolis_parameter")
+    f.units = "s-1"
+
+    return total_area, total_volume, total_mass, circulation, f
 
 
 def integrate(cube, mask):
