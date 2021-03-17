@@ -39,11 +39,16 @@ def timediff(cube, case_study):
 def get_cube_by_name(cubes, name):
     if name == "density":
         cube = density(cubes)
+    elif name == "planetary_vorticity":
+        cube = cubes.extract_cube("coriolis_parameter")
+    elif name == "relative_vorticity":
+        cube = get_cube_by_name(cubes, "mass_integrated_vorticity") - \
+               cubes.extract_cube("coriolis_parameter").data
     elif "vorticity" in name:
         cube = vorticity(cubes, name[:-9])
     elif "PV" in name:
         cube = potential_vorticity(cubes, name[:-2])
-    elif name=="mass area anomaly ratio":
+    elif name == "mass area anomaly ratio":
         cube = ratio(cubes)
     else:
         cube = cubes.extract_cube(name)

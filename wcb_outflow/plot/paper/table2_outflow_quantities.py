@@ -18,9 +18,8 @@ diagnostics = [
     "mass",
     "area",
     "mass_integrated_vorticity",
-    "vorticity",
-    "relative_vorticity",
     "planetary_vorticity",
+    "relative_vorticity",
 ]
 
 
@@ -31,7 +30,7 @@ def main():
     ))
     for case in case_studies:
         case_study = case_studies[case]
-        cubes = iris.load(str(case_study.data_path / "circulation.nc"))
+        cubes = iris.load(str(case_study.data_path / "circulation_outflow.nc"))
 
         dt = case_study.outflow_time - datetime.datetime(1970, 1, 1)
         idx_outflow = (
@@ -54,7 +53,7 @@ def main():
                 cube = calc.get_cube_by_name(cubes_theta, name)
 
                 if "vorticity" in name:
-                    if name == "vorticity":
+                    if name == "mass_integrated_vorticity":
                         vort_0 = cube[idx_inflow]
 
                     if name == "vorticity" or name == "mass_integrated_vorticity":
