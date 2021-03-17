@@ -41,7 +41,7 @@ time_zero = dict(
 labels = dict(
     mass=r"$M$    ",
     area="$A$    ",
-    density=r"$\rho$    ",
+    density=r"$r$    ",
     relative_vorticity=r"$\xi$    ",
 )
 
@@ -51,7 +51,7 @@ def main(diagnostics):
 
     ldg = len(diagnostics)
 
-    fig, axes = plt.subplots(ldg*2 + 1, 2, figsize=(8, 10), sharex="all", sharey="row")
+    fig, axes = plt.subplots(ldg*2 + 1, 2, figsize=(8, 12), sharex="all", sharey="row")
 
     for n, case_name in enumerate(case_studies):
         case_study = case_studies[case_name]
@@ -65,7 +65,7 @@ def main(diagnostics):
             if name == "mass" or name == "area":
                 ylims = [0, 1]
             elif name == "relative_vorticity":
-                ylims = [-1, 0]
+                ylims = [-1, 0.5]
             elif name == "density":
                 ylims = [-0.5, 0.5]
             else:
