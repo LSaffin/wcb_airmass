@@ -58,8 +58,8 @@ def make_plot(case):
     plt.fill_between(times, x00, x100, color="b", alpha=0.1, label="0-100%")
     plt.fill_between(times, x05, x95, color="b", alpha=0.25, label="5-95%")
     plt.fill_between(times, x25, x75, color="grey", alpha=0.75, label="25-75%")
-    plt.plot(times, xMean, color="k", label="Mean")
-    plt.plot(times, xMed, color="w", label="Median")
+    plt.plot(times, xMean, color="k", lw=3, label="Mean")
+    plt.plot(times, xMed, color="C1", lw=3, alpha=0.5, label="Median")
     plt.title(case.name)
     plt.grid(True)
 
