@@ -55,7 +55,7 @@ def main(diagnostics):
 
     for n, case_name in enumerate(case_studies):
         case_study = case_studies[case_name]
-        cubes = iris.load(str(case_study.data_path / "circulation.nc"))
+        cubes = iris.load(str(case_study.data_path / "circulation_outflow.nc"))
 
         for m, name in enumerate(diagnostics):
             i = m + (n // 2) * ldg + n // 2

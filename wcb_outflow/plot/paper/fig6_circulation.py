@@ -26,7 +26,7 @@ def main():
 
         print(case)
         case_study = case_studies[case]
-        cubes = iris.load(str(case_study.data_path / "circulation.nc"))
+        cubes = iris.load(str(case_study.data_path / "circulation_outflow.nc"))
 
         for m, theta_level in enumerate(case_study.outflow_theta):
             cubes_theta = cubes.extract(iris.Constraint(

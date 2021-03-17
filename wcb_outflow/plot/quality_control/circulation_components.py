@@ -13,7 +13,7 @@ def main():
         case_study = case_studies[case]
 
         # Load trajectories
-        circulation = iris.load(str(case_study.data_path / "circulation.nc"))
+        circulation = iris.load(str(case_study.data_path / "circulation_outflow.nc"))
 
         # Repeat for all theta levels
         for j, theta_level in enumerate(case_study.outflow_theta):

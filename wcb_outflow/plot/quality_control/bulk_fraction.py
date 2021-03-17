@@ -22,7 +22,7 @@ def panel(ax, name, ylims, colours):
     for n, case_name in enumerate(case_studies):
         case_study = case_studies[case_name]
         colour = colours[n]
-        cubes = iris.load(str(case_study.data_path / "circulation.nc"))
+        cubes = iris.load(str(case_study.data_path / "circulation_outflow.nc"))
 
         # pick the middle theta level
         theta_level = case_study.outflow_theta[1]
